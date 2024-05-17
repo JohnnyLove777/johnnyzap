@@ -1,0 +1,461 @@
+body {
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: white;
+}
+
+#header {
+    width: 100%;
+    background-color: #000;
+    color: white;
+    text-align: center; /* Centralizado, conforme estilo anterior */
+    padding: 18px 15px;
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    font-size: 20px;
+}
+
+#sidebar {
+    height: 100vh;
+    width: 300px;
+    position: fixed;
+    z-index: 1;
+    top: 60px;
+    left: 0;
+    background-color: #000;
+    overflow-x: hidden;
+    padding-top: 20px;
+    border-right: 2px solid white;
+}
+
+#sidebar a {
+    padding: 20px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+}
+
+#sidebar a:hover {
+    background-color: #444; /* Efeito hover ajustado */
+    color: white; /* Mantém a cor branca para o texto */
+    transform: scale(1.05); /* Adicionado efeito de transformação */
+}
+
+#main-content {
+    margin-left: 300px;
+    padding: 80px 20px 20px 20px;
+    transition: margin-left .5s;
+    text-align: center;
+}
+
+#main-content h2 {
+    margin-bottom: 20px;
+}
+
+#main-content label {
+    display: block;
+    margin-top: 20px;
+    color: white;
+    text-align: center;
+}
+
+#main-content input[type="text"] {
+    width: calc(100% - 500px);
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid white;
+    background-color: #222;
+    color: white;
+    border-radius: 5px; /* Bordas arredondadas adicionadas */
+}
+
+#main-content small {
+    display: block;
+    margin-top: 5px;
+    color: #ddd;
+    font-size: 12px;
+    text-align: center;
+}
+
+button#registerTypeZap {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #4A90E2; /* Cor do botão ajustada */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s; /* Adicionado efeito de transformação */
+    font-size: 18px;
+}
+
+button#registerTypeZap:hover {
+    background-color: #57a1ff; /* Cor do botão ao passar o mouse ajustada */
+    transform: scale(1.05); /* Efeito de leve aumento */
+}
+
+.fas {
+    margin-right: 10px;
+    color: #ddd;
+}
+
+#fluxosWrapper {
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#fluxosList {
+    background-color: #333;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+#fluxosList table {
+    width: 100%;
+}
+
+#fluxosList th, #fluxosList td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #777;
+}
+
+#fluxosList tr:hover {
+    background-color: #555;
+}
+
+#fluxosList th {
+    position: sticky;
+    top: 0;
+    background-color: #007bff;
+    border-bottom: 3px solid #0056b3;
+}
+
+.deleteFluxo i {
+    cursor: pointer;
+}
+
+#fluxosWrapper button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+}
+
+#atualizarLista, #adicionarFluxo, #atualizarListaRapida, #adicionarRespostaRapida, #atualizarGrupo, #atualizarListaRmkt, #adicionarRmkt {
+    background-color: #007bff;
+    color: white;
+}
+
+#atualizarLista:hover, #adicionarFluxo:hover, #atualizarListaRapida:hover, #adicionarRespostaRapida:hover, #atualizarGrupo:hover, #atualizarListaRmkt:hover, #adicionarRmkt:hover {
+    background-color: #0056b3;
+}
+
+input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #222;
+    color: white;
+}
+
+#addFluxoModalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+#addFluxoModal {
+    background-color: #222;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 500px;
+}
+
+#addFluxoModal input[type="text"] {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #222;
+    color: white;
+}
+
+#addFluxoModal button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+#closeModal {
+    float: right;
+    cursor: pointer;
+    color: white;
+    font-size: 24px;
+}
+
+/* ... Continuação dos estilos adaptados conforme necessário ... */
+
+#carregarLeads {
+    background-color: #222; /* Fundo mais escuro */
+    padding: 20px;
+    border-radius: 8px;
+    margin: 30px auto;
+    max-width: 600px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+#carregarLeads h2 {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+#fileInput, #uploadButton {
+    width: 90%;
+    padding: 10px;
+    margin: 10px auto 20px;
+    display: inline-block;
+}
+
+#fileInput {
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #222;
+    color: white;
+}
+
+#uploadButton {
+    background-color: #4A90E2; /* Ajuste para estilo de botão */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#uploadButton:hover {
+    background-color: #57a1ff; /* Cor mais clara no hover */
+    transform: scale(1.05);
+}
+
+.file-upload-wrapper {
+    position: relative;
+    width: 90%;
+    margin: 20px auto;
+}
+
+.file-upload-input {
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-button, #uploadButton {
+    display: block;
+    width: calc(100% - 20px);
+    margin: 10px auto;
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.file-upload-button {
+    background-color: #007bff;
+}
+
+.file-upload-text {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #fff;
+}
+
+#carregarArquivoMidia {
+    background-color: #222; /* Fundo mais escuro */
+    padding: 20px;
+    border-radius: 8px;
+    margin: 30px auto;
+    max-width: 600px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+#carregarArquivoMidia h2 {
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.file-upload-wrapper {
+    position: relative;
+    width: 90%;
+    margin: 20px auto;
+}
+
+.file-upload-input {
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-button, #uploadButtonMidia {
+    display: block;
+    width: calc(100% - 20px);
+    margin: 10px auto;
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.file-upload-button {
+    background-color: #007bff; /* Azul padrão */
+}
+
+#uploadButtonMidia {
+    background-color: #4A90E2; /* Ajuste para estilo de botão */
+}
+
+.file-upload-text {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #fff;
+}
+
+/* Estilização de hover para botões */
+.file-upload-button:hover, #uploadButtonMidia:hover {
+    background-color: #57a1ff; /* Cor mais clara no hover */
+    transform: scale(1.05);
+}
+
+#massMessageDispatch {
+    text-align: center;
+    margin-top: 20px;
+    background-color: #222;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group div {
+    display: inline-block;
+    width: 48%;
+    margin-right: 4%;
+}
+
+.input-group div:last-child {
+    margin-right: 0;
+}
+
+.input-group label {
+    display: block;
+    margin: 10px auto;
+    color: white;
+}
+
+.buttons-group {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.buttons-group button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    width: auto;
+    display: inline-block;
+}
+
+#iniciarCampanha, #pararCampanha {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#iniciarCampanha:hover, #pararCampanha:hover {
+    transform: scale(1.05);
+}
+
+select, input[type="number"] {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    background-color: #222;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+}
+
+#massMessageDispatch input[type="number"], #massMessageDispatch select {
+    width: 95%;
+}
+
+#massMessageDispatch label {
+    color: white;
+}
+
+.input-group-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.input-group-inline > div {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.input-group-inline > div:last-child {
+    margin-right: 0;
+}
+
+.input-group-inline input[type="number"] {
+    width: 95%;
+}

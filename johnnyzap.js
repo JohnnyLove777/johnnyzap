@@ -449,8 +449,8 @@ wss.on('connection', function connection(ws) {
     ws.send('Conexão WebSocket estabelecida com sucesso!');
 });
 
-server.listen(8040, function() {
-    console.log('Servidor do JohnnyZap rodando em http://localhost:8040');
+server.listen(3031, function() {
+    console.log('Servidor do JohnnyZap rodando em http://localhost:3031');
 });
 
 //Mecanismo para criar pasta

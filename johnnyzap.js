@@ -11,8 +11,6 @@ const WebSocket = require('ws');
 const socketIo = require('socket.io');
 const http = require('http');
 const https = require('https');
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
 const OpenAI = require('openai');
 const { spawn } = require('child_process');
 const { promisify } = require('util');
@@ -121,6 +119,12 @@ function sendStatusMessage(message) {
 }
 
 // Fim das rotinas que implementam o disparo de mensagens em massa via Dashboard
+
+const appWeb = express();
+const serverWeb = http.createServer(appWeb);
+const wss = new WebSocket.Server({ serverWeb });
+
+appWeb.use(express.static('public'));
 
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
@@ -449,7 +453,7 @@ wss.on('connection', function connection(ws) {
     ws.send('Conexão WebSocket estabelecida com sucesso!');
 });
 
-server.listen(3031, function() {
+serverWeb.listen(3031, function() {
     console.log('Servidor do JohnnyZap rodando em http://localhost:3031');
 });
 

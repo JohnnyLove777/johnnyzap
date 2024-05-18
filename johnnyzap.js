@@ -23,6 +23,7 @@ const instanceName = 'JohnnyEVO';
 const apiKeyEVO = 'f594jqci37r72wsr7e2czj';
 
 const DATABASE_FILE_TYPE = 'typebotDB.json';
+const db_length = 600;
 
 console.log("Bem-vindo ao JohnnyZap Inteligênte 1.5 - A Integração mais completa Typebot + Whatsapp + OpenAI e ElevenLabs");
 

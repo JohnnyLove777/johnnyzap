@@ -84,14 +84,7 @@ function readJSONFile(nomeArquivo) {
     // Verifica se o arquivo do banco de dados já existe
     if (!fs.existsSync(DATABASE_FILE_SYSTEM)) {
       // Se não existir, inicializa com dados de exemplo
-      const initialConfigs = {
-        instance1: {
-          url_chat: 'https://example.com/chat1',
-          openaikey: 'your-openaikey-1',
-          elevenlabskey: 'your-elevenlabskey-1',
-          apiKeyEVO: 'your-apiKeyEVO-1'
-        }
-      };
+      const initialConfigs = {};
   
       writeJSONFile(DATABASE_FILE_SYSTEM, initialConfigs);
       console.log('Banco de dados do sistema inicializado com dados de exemplo.');
@@ -114,11 +107,10 @@ function readJSONFile(nomeArquivo) {
     }
   
     const objeto = { url_chat, openaikey, elevenlabskey, apiKeyEVO };
-    dadosAtuais[instanceName] = objeto;
+    dadosAtuais[instanceName] = objeto;    
     
-    console.log('Dados antes de salvar:', dadosAtuais); // Log dos dados antes de salvar
     writeJSONFile(DATABASE_FILE_SYSTEM, dadosAtuais);
-    console.log('Dados salvos com sucesso.'); // Log confirmando que os dados foram salvos
+    
   }
   
   function readInstance(instanceName) {
@@ -173,6 +165,24 @@ function readJSONFile(nomeArquivo) {
     }
   
     return true;
+  }
+
+  function readInstanceURL(instanceName) {
+    const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
+    const objeto = dadosAtuais[instanceName];
+  
+    if (!objeto) {
+      console.error('Instância não encontrada.');
+      return null;
+    }
+  
+    // Retorna a URL e as chaves correspondentes à instância fornecida
+    return {
+      url_chat: objeto.url_chat,
+      openaikey: objeto.openaikey,
+      elevenlabskey: objeto.elevenlabskey,
+      apiKeyEVO: objeto.apiKeyEVO
+    };
   }
   
   // Fim dos dados do sistema
@@ -1027,6 +1037,7 @@ module.exports = {
     deleteObjectSystem,
     existsDBSystem,
     existsTheDBSystem,
+    readInstanceURL,
     addObject,
     readMap,
     deleteObject,

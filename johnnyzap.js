@@ -743,7 +743,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                 const sessionId = await db.readSessionId(remoteJid);                
                 db.updateNextAudio(remoteJid, false);
                 db.updateNextImage(remoteJid, false);
-                const chaturl = `${db.readURL(0).url_chat}${sessionId}/continueChat`;
+                const chaturl = `${db.readInstanceURL(instanceName).url_chat}${sessionId}/continueChat`;
 
                 //const content = await processMessageIA(msg);
                 let content = "N/A";

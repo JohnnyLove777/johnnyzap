@@ -22,6 +22,8 @@ const db = require('./databaseFunctions');
 const instanceName = 'JohnnyEVO';
 const apiKeyEVO = 'f594jqci37r72wsr7e2czj';
 
+const DATABASE_FILE_TYPE = 'typebotDB.json';
+
 console.log("Bem-vindo ao JohnnyZap Inteligênte 1.5 - A Integração mais completa Typebot + Whatsapp + OpenAI e ElevenLabs");
 
 // Conectando ao daemon do PM2

@@ -521,6 +521,27 @@ if (!fs.existsSync('media')) {
   fs.mkdirSync('media');
 }
 
+async function waitWithDelay(inputString) {
+    // Verifica se a string começa com '!wait'
+    if (inputString.startsWith('!wait')) {
+      // Extrai o número da string usando expressões regulares
+      const match = inputString.match(/\d+/);
+      
+      if (match) {
+        // Converte o número para um valor inteiro
+        const delayInSeconds = parseInt(match[0]);
+        
+        // Aguarda o atraso usando o valor extraído
+        await new Promise(resolve => setTimeout(resolve, delayInSeconds * 1000));
+        
+        //console.log(`Aguardou ${delayInSeconds} segundos.`);
+      } else {
+        const defaultDelayInSeconds = 3;
+        await new Promise(resolve => setTimeout(resolve, defaultDelayInSeconds * 1000));
+      }
+    }
+}
+
 async function createSessionJohnny(datafrom, dataid, url_registro, fluxo) {   
   
     const reqData = JSON.stringify({
@@ -596,8 +617,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo) {
       
           formattedText = formattedText.replace(/\n$/, '');
           if (formattedText.startsWith('!wait')) {
-            const delay = parseInt(formattedText.split(" ")[1], 10);
-            db.updateDelay(datafrom, delay);
+            await waitWithDelay(formattedText);
           }
           if (formattedText.startsWith('!caption')) {
             const caption = formattedText.split(" ")[1];
@@ -625,31 +645,31 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo) {
             const destino = partes[1];
             const conteudo = partes.slice(2).join(' ');
 
-            johnny.EnviarTexto(destino, conteudo, db.readDelay(datafrom), apiKeyEVO, instanceName);
+            johnny.EnviarTexto(destino, conteudo, 2000, apiKeyEVO, instanceName);
             db.updateDelay(datafrom, null);
             
           }                 
           if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
-            johnny.EnviarTexto(datafrom, formattedText, db.readDelay(datafrom), apiKeyEVO, instanceName);  
-            db.updateDelay(datafrom, null);          
+            johnny.EnviarTexto(datafrom, formattedText, 2000, apiKeyEVO, instanceName);  
+            //db.updateDelay(datafrom, null);          
           }      
         }
         if (message.type === 'image') {          
             const url_target = message.content.url;
-            johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), db.readDelay(datafrom), apiKeyEVO, instanceName);
-            db.updateDelay(datafrom, null);
+            johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName);
+            //db.updateDelay(datafrom, null);
             db.updateCaption(datafrom, null);        
         }                          
         if (message.type === 'video') {          
             const url_target = message.content.url;
-            johnny.EnviarVideo(datafrom, url_target, db.readCaption(datafrom), db.readDelay(datafrom), apiKeyEVO, instanceName);
-            db.updateDelay(datafrom, null);
+            johnny.EnviarVideo(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName);
+            //db.updateDelay(datafrom, null);
             db.updateCaption(datafrom, null);
         }                            
         if (message.type === 'audio') {          
             const url_target = message.content.url;
-            johnny.EnviarAudio(datafrom, url_target, db.readDelay(datafrom), apiKeyEVO, instanceName);
-            db.updateDelay(datafrom, null);
+            johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);
+            //db.updateDelay(datafrom, null);
         } 
       }
 
@@ -783,8 +803,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                   
                       formattedText = formattedText.replace(/\n$/, '');
                       if (formattedText.startsWith('!wait')) {
-                        const delay = parseInt(formattedText.split(" ")[1], 10);
-                        db.updateDelay(remoteJid, delay);
+                        await waitWithDelay(formattedText);
                       }
                       if (formattedText.startsWith('!caption')) {
                         const caption = formattedText.split(" ")[1];
@@ -812,30 +831,30 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         const destino = partes[1];
                         const conteudo = partes.slice(2).join(' ');
             
-                        johnny.EnviarTexto(destino, conteudo, db.readDelay(remoteJid), apiKeyEVO, instanceName);
+                        johnny.EnviarTexto(destino, conteudo, 2000, apiKeyEVO, instanceName);
                         //db.updateDelay(remoteJid, null);
                         
                       }                     
                       if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
-                        johnny.EnviarTexto(remoteJid, formattedText, db.readDelay(remoteJid), apiKeyEVO, instanceName);  
+                        johnny.EnviarTexto(remoteJid, formattedText, 2000, apiKeyEVO, instanceName);  
                         //db.updateDelay(remoteJid, null);
                       }                                                    
                     }
                     if (message.type === 'image') {          
                         const url_target = message.content.url;
-                        johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), db.readDelay(remoteJid), apiKeyEVO, instanceName);
+                        johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName);
                         //db.updateDelay(remoteJid, null);
                         db.updateCaption(remoteJid, null);        
                     }                          
                     if (message.type === 'video') {          
                         const url_target = message.content.url;
-                        johnny.EnviarVideo(remoteJid, url_target, db.readCaption(remoteJid), db.readDelay(remoteJid), apiKeyEVO, instanceName);
+                        johnny.EnviarVideo(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName);
                         //db.updateDelay(remoteJid, null);
                         db.updateCaption(remoteJid, null);
                     }                            
                     if (message.type === 'audio') {          
                         const url_target = message.content.url;
-                        johnny.EnviarAudio(remoteJid, url_target, db.readDelay(remoteJid), apiKeyEVO, instanceName);
+                        johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);
                         //db.updateDelay(remoteJid, null);
                     }  
                                             

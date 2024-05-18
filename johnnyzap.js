@@ -122,7 +122,7 @@ function sendStatusMessage(message) {
 
 const appWeb = express();
 const serverWeb = http.createServer(appWeb);
-const wss = new WebSocket.Server({ serverWeb });
+const wss = new WebSocket.Server({ server: serverWeb });
 
 appWeb.use(express.static('public'));
 
@@ -137,7 +137,7 @@ wss.on('connection', function connection(ws) {
         if (parsedMessage.action === 'registerTypeZap') {
           const { url, openAIKey, elevenLabsKey } = parsedMessage.data;
             db.addObjectSystem(url, openAIKey, elevenLabsKey);
-            db.initializeClient(openAIKey);
+            //db.initializeClient(openAIKey);
             ws.send('JohnnyZap registrado com sucesso! Pow pow tei tei, pra cima deles!!');
         }
         else if (parsedMessage.action === 'atualizarLista') {
@@ -454,7 +454,7 @@ wss.on('connection', function connection(ws) {
 });
 
 serverWeb.listen(3031, function() {
-    console.log('Servidor do JohnnyZap rodando em http://localhost:3031');
+    console.log('Servidor do JohnnyZap com o Dashboard em http://localhost:3031');
 });
 
 //Mecanismo para criar pasta
@@ -856,5 +856,5 @@ app.post('/webhook/messages-upsert', async (req, res) => {
 // Porta onde o servidor vai escutar
 const PORT = 3030;
 app.listen(PORT, () => {
-  console.log(`Servidor escutando na porta ${PORT}`);
+  console.log(`Servidor Webhook EVO escutando na porta ${PORT}`);
 });

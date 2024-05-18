@@ -164,6 +164,8 @@ function readJSONFile(nomeArquivo) {
   // Fim dos dados do sistema
   
   //Gestão de dados do controle das sessões
+
+const DATABASE_FILE = "typesessaodb.json";
   
 function addObject(numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption, maxObjects) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);

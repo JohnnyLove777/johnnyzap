@@ -140,8 +140,7 @@ wss.on('connection', function connection(ws) {
         
             try {
                 // Adiciona o novo objeto no sistema
-                db.addObjectSystem(instanciaNome, url, openAIKey || '', elevenLabsKey || '', instanciaChave);
-                db.addObjectSystem(instanciaNome, url, "", "", instanciaChave);
+                db.addObjectSystem(instanciaNome, url, openAIKey || '', elevenLabsKey || '', instanciaChave);                
                 console.log('JohnnyZap Instância registrada com sucesso! Pow pow tei tei, pra cima deles!!');
             } catch (error) {
                 ws.send(`Erro ao registrar JohnnyZap: ${error.message}`);
@@ -501,6 +500,8 @@ const voice_SETTINGS = {
     use_speaker_boost: true
 };
 
+// Inicializando banco de dados das Instancias
+db.initializeDBSystem();
 // Inicializando banco de dados dos fluxos do Typebot
 db.initializeDB();
 // Inicializando banco de dados das respostas Rápidas

@@ -79,6 +79,27 @@ function readJSONFile(nomeArquivo) {
   // Dados do sistema
   
   const DATABASE_FILE_SYSTEM = 'typeSystemDB.json';
+
+  function initializeDBSystem() {
+    // Verifica se o arquivo do banco de dados já existe
+    if (!fs.existsSync(DATABASE_FILE_SYSTEM)) {
+      // Se não existir, inicializa com dados de exemplo
+      const initialConfigs = {
+        instance1: {
+          url_chat: 'https://example.com/chat1',
+          openaikey: 'your-openaikey-1',
+          elevenlabskey: 'your-elevenlabskey-1',
+          apiKeyEVO: 'your-apiKeyEVO-1'
+        }
+      };
+  
+      writeJSONFile(DATABASE_FILE_SYSTEM, initialConfigs);
+      console.log('Banco de dados do sistema inicializado com dados de exemplo.');
+    } else {
+      // Se já existir, mantém os dados existentes
+      console.log('Banco de dados do sistema já existe e não será sobrescrito.');
+    }
+  }
   
   function readMapSystem(instanceName) {
     const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
@@ -998,6 +1019,7 @@ module.exports = {
     existsReloggin,
     readJSONFile,
     writeJSONFile,
+    initializeDBSystem,
     readMapSystem,
     addObjectSystem,
     readInstance,

@@ -80,84 +80,75 @@ function readJSONFile(nomeArquivo) {
   
   const DATABASE_FILE_SYSTEM = 'typeSystemDB.json';
   
-  
-  function readMapSystem(url_chat) {
+  function readMapSystem(instanceName) {
     const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
-    const objeto = dadosAtuais.find(obj => obj.url_chat !== url_chat);
+    return dadosAtuais[instanceName] || null;
+  }
+  
+  function addObjectSystem(instanceName, url_chat, openaikey, elevenlabskey, apiKeyEVO) {
+    const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
+  
+    if (dadosAtuais[instanceName]) {
+      throw new Error('A instância já existe no banco de dados.');
+    }
+  
+    const objeto = { url_chat, openaikey, elevenlabskey, apiKeyEVO };
+  
+    dadosAtuais[instanceName] = objeto;
+    writeJSONFile(DATABASE_FILE_SYSTEM, dadosAtuais);
+  }
+  
+  function readInstance(instanceName) {
+    const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
+    const objeto = dadosAtuais[instanceName];
+    if (!objeto) {
+      console.error('Instância não encontrada.');
+      return null;
+    }
     return objeto;
   }
   
-  function addObjectSystem(url_chat, openaikey, elevenlabskey) {
+  function updateObjectSystem(instanceName, url_chat, openaikey, elevenlabskey, apiKeyEVO) {
     const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
-  
-    // Verificar a unicidade do url_chat
-    const existeurlchat = dadosAtuais.some(objeto => objeto.url_chat === url_chat);
-    if (existeurlchat) {
-      throw new Error('O URL Chat já existe no banco de dados.');
-    }
-  
-    const objeto = {url_chat, openaikey, elevenlabskey};  
-  
-    dadosAtuais.push(objeto);
-    writeJSONFile(DATABASE_FILE_SYSTEM, dadosAtuais);
-  }
-  
-  function readURL(indice) {
-    const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
-  
-    // Verifica se o índice é válido
-    if (indice < 0 || indice >= dadosAtuais.length) {
-        console.error('Índice inválido.');
-        return null;
-    }
-  
-    // Retorna a URL e as chaves correspondentes ao índice fornecido
-    const objeto = dadosAtuais[indice];
-    return {
-        url_chat: objeto.url_chat,
-        openaikey: objeto.openaikey,
-        elevenlabskey: objeto.elevenlabskey
-    };
-  }
-  
-  function updateObjectSystem(url_chat, openaikey, elevenlabskey) {
-    const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
-    const objeto = dadosAtuais.find(obj => obj.url_chat === url_chat);
+    const objeto = dadosAtuais[instanceName];
   
     if (!objeto) {
-        throw new Error('URL Chat não encontrado.');
+      throw new Error('Instância não encontrada.');
     }
   
+    objeto.url_chat = url_chat;
     objeto.openaikey = openaikey;
     objeto.elevenlabskey = elevenlabskey;
+    objeto.apiKeyEVO = apiKeyEVO;
   
     writeJSONFile(DATABASE_FILE_SYSTEM, dadosAtuais);
   }
   
-  function deleteObjectSystem(url_chat) {
+  function deleteObjectSystem(instanceName) {
     const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
-    const novosDados = dadosAtuais.filter(obj => obj.url_chat !== url_chat);
-    writeJSONFile(DATABASE_FILE_SYSTEM, novosDados);
+    if (!dadosAtuais[instanceName]) {
+      throw new Error('Instância não encontrada.');
+    }
+    delete dadosAtuais[instanceName];
+    writeJSONFile(DATABASE_FILE_SYSTEM, dadosAtuais);
   }
   
-  function existsDBSystem(url_chat) {
+  function existsDBSystem(instanceName) {
     const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
-    return dadosAtuais.some(obj => obj.url_chat !== url_chat);
+    return !!dadosAtuais[instanceName];
   }
   
   function existsTheDBSystem() {
-    // Verifica se o arquivo DATABASE_FILE_SYSTEM existe
     if (!fs.existsSync(DATABASE_FILE_SYSTEM)) {
-      return false; // Retorna false se o arquivo não existir
+      return false;
     }
   
     const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
   
-    // Verifica se o arquivo está vazio
-    if (dadosAtuais.length === 0) {
-      return false; // Retorna false se o arquivo estiver vazio
+    if (Object.keys(dadosAtuais).length === 0) {
+      return false;
     }
-    
+  
     return true;
   }
   
@@ -1007,7 +998,7 @@ module.exports = {
     writeJSONFile,
     readMapSystem,
     addObjectSystem,
-    readURL,
+    readInstance,
     updateObjectSystem,
     deleteObjectSystem,
     existsDBSystem,

@@ -19,8 +19,8 @@ const writeFileAsync = promisify(fs.writeFile);
 const johnny = require('./johnnyFunctions');
 const db = require('./databaseFunctions');
 
-const instanceName = 'JohnnyEVO';
-const apiKeyEVO = 'f594jqci37r72wsr7e2czj';
+/*const instanceName = 'JohnnyEVO';
+const apiKeyEVO = 'f594jqci37r72wsr7e2czj';*/
 
 const DATABASE_FILE_TYPE = 'typebotDB.json';
 const db_length = 600;
@@ -57,10 +57,6 @@ pm2.connect((err) => {
         });
     });
 });
-
-if(!db.existsReloggin(instanceName)){
-    db.addReloggin(instanceName,false);
-}
 
 // Rotinas que implementam o disparo de mensagens em massa pelo Dashboard
 
@@ -138,11 +134,16 @@ wss.on('connection', function connection(ws) {
         
         // Verificar se a ação é de registrar JohnnyZap
         if (parsedMessage.action === 'registerTypeZap') {
-          const { url, openAIKey, elevenLabsKey } = parsedMessage.data;
-            db.addObjectSystem(url, openAIKey, elevenLabsKey);
-            //db.initializeClient(openAIKey);
-            ws.send('JohnnyZap registrado com sucesso! Pow pow tei tei, pra cima deles!!');
-        }
+            const { url, instanciaNome, instanciaChave, openAIKey, elevenLabsKey } = parsedMessage.data;
+        
+            try {
+                // Adiciona o novo objeto no sistema
+                db.addObjectSystem(instanciaNome, url, openAIKey || '', elevenLabsKey || '', instanciaChave);
+                console.log('JohnnyZap Instância registrada com sucesso! Pow pow tei tei, pra cima deles!!');
+            } catch (error) {
+                ws.send(`Erro ao registrar JohnnyZap: ${error.message}`);
+            }
+        }        
         else if (parsedMessage.action === 'atualizarLista') {
           //console.log('Apertou botão para atualizar lista');
       
@@ -542,7 +543,7 @@ async function waitWithDelay(inputString) {
     }
 }
 
-async function createSessionJohnny(datafrom, dataid, url_registro, fluxo) {   
+async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instanceName, apiKeyEVO) {   
   
     const reqData = JSON.stringify({
       isStreamEnabled: true,
@@ -691,6 +692,14 @@ app.post('/webhook/messages-upsert', async (req, res) => {
     const event = req.body;
   
     const messageData = event.data;
+    const instanceName = event.instance;  
+
+    const instanceData = db.readMapSystem(instanceName);
+    if (!instanceData) {
+    console.error(`Instância ${instanceName} não encontrada. Processamento encerrado.`);
+    return;
+    }
+    const apiKeyEVO = instanceData.apiKeyEVO;
     const messageBody = messageData.message.conversation; // Mensagem enviada
     const remoteJid = messageData.key.remoteJid; // Numero de wpp do remetente
     const messageId = messageData.key.id; // ID da mensagem original para reações e baixar mídia
@@ -702,9 +711,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
       if (fromMe) {
         // Coisas aqui
       } else if (!fromMe) {
-        if(db.existsTheDBSystem() === false){
-            return
-          }    
+           
         const typebotKey = await db.readFluxo(remoteJid);
 
         if (!typebotKey) {
@@ -717,7 +724,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                       // Verifica se a mensagem corresponde ao gatilho, ou se o gatilho é "null" e a mensagem não é nula
                       if ((typebotConfig.gatilho === messageBody) || (typebotConfig.gatilho === "null")) {
                           // Inicia a sessão com o Typebot correspondente
-                          await createSessionJohnny(remoteJid, messageId, typebotConfig.url_registro, typebotConfig.name);
+                          await createSessionJohnny(remoteJid, messageId, typebotConfig.url_registro, typebotConfig.name, instanceName, apiKeyEVO);
                           //await scheduleRemarketing(typebotConfig.name, msg.from, msg);
                           break; // Sai do loop após encontrar o gatilho correspondente
                       }

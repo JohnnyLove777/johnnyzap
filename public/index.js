@@ -334,41 +334,7 @@ mainContent.addEventListener('click', function(event) {
             case 'listaFluxosAtualizada':
                 updateFluxosSelect(message.data);
                 break;
-            /* // Protótipo para integrar qrcode no dashboard
-            case 'qr':
-                const qrCodeDiv = message.sessionId === 'typeListener' ? document.getElementById('listenerQR') : document.getElementById('senderQR');
-                if (qrCodeDiv) {
-                    qrCodeDiv.innerHTML = `<img src="${message.qrCode}" alt="QR Code para ${message.sessionId}">`;
-                }
-                break;
-            case 'ready':
-                const qrResponseDiv = document.getElementById('qrResponse');
-                if (qrResponseDiv) {
-                    qrResponseDiv.innerHTML = `Instância ${message.sessionId} conectada.`;
-                }
-                break;
-            case 'disconnected':
-                const qrStatusDiv = document.getElementById('qrResponse');
-                if (qrStatusDiv) {
-                    qrStatusDiv.innerHTML = `Instância ${message.sessionId} desconectada. Motivo: ${message.reason}`;
-                }
-                // Reseta os QR Codes para estado de espera
-                if (message.sessionId === 'typeListener') {
-                    document.getElementById('listenerQR').innerHTML = 'Aguardando QR Code...';
-                } else if (message.sessionId === 'sendMessage') {
-                    document.getElementById('senderQR').innerHTML = 'Aguardando QR Code...';
-                }
-                break;
-            case 'logoutSuccess':
-                if (responseDiv) {
-                    responseDiv.innerHTML = message.data.message;
-                    responseDiv.style.color = 'green';
-                }
-                // Reseta os QR Codes para o estado de espera
-                document.getElementById('listenerQR').innerHTML = 'Aguardando QR Code...';
-                document.getElementById('senderQR').innerHTML = 'Aguardando QR Code...';
-                break;
-                */
+            
             // Adicione aqui outros casos conforme necessário
             default:
                 // Caso padrão para mensagens não reconhecidas
@@ -754,34 +720,6 @@ if (pararCampanhaBtn) {
     });
 }
 
-/* // Protótipo para integrar qrcode no dashboard
-// Gerar os QrCodes
-
-const generateQRCodesBtn = document.getElementById('generateQRCodes');
-if (generateQRCodesBtn) {
-        generateQRCodesBtn.addEventListener('click', function() {
-            // Envia a solicitação para gerar ambos os QR Codes ao servidor
-            ws.send(JSON.stringify({ action: 'generateListenerQRCode' }));
-            ws.send(JSON.stringify({ action: 'generateSenderQRCode' }));
-            console.log('Solicitação para gerar ambos os QR Codes enviada ao servidor.');
-        });
-}
-
-// Adiciona o listener para o botão "Deslogar Instâncias"
-const logoutInstancesBtn = document.getElementById('logoutInstances');
-if (logoutInstancesBtn) {
-        logoutInstancesBtn.addEventListener('click', function() {
-            // Envia a solicitação para deslogar ambas as instâncias ao servidor
-            ws.send(JSON.stringify({ action: 'logoutListenerInstance' }));
-            ws.send(JSON.stringify({ action: 'logoutSenderInstance' }));
-            console.log('Solicitação para deslogar ambas as instâncias enviada ao servidor.');
-        });
-}
-*/
-
-
-    
-
     // Implemente a lógica para "Adicionar Fluxo" e outros event listeners necessários
 }
 
@@ -795,91 +733,81 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
             e.preventDefault(); // Prevenir o comportamento padrão de navegação de âncoras
             const sectionName = link.textContent.trim();
 
-            // <a href="#ativarQR"><i class="fas fa-qrcode"></i> Gerar QR Code</a>
-            //<p style="margin-top: 20px;">O Futuro começa aqui, seja muito bem vindo(a) futuro mago das automações LowCost</p>
-            //<a href="#ativarQR"><i class="fas fa-qrcode"></i> Gerar QR Code</a> Verificar se o link clicado é "Gerar QR Code"
-            /*if (sectionName === "Gerar QR Code") {
-                // Substituir o conteúdo de mainContent pela seção com botões para abrir as páginas de QR Code
-                mainContent.innerHTML = `
-                <div id="ativarQRCode">
-                    <h2>Ativação de Instâncias do JohnnyZap</h2>
-                    <p>Use os botões abaixo para ativar as instâncias de escuta e envio de mensagens.</p>
-                    <div class="button-container" style="margin-top: 20px; display: flex; justify-content: space-around;">
-                        <button onclick="window.open('typeListenerQR.html', '_blank')">Ativar Listener QR Code</button>
-                        <button onclick="window.open('sendMessageQR.html', '_blank')">Ativar Sender QR Code</button>
-                    </div>       
-                </div>
-                `;
-            
-                attachEventListeners(); // Assumindo que essa função configura ouvintes de eventos necessários
-            }*/
-                                            
-
             // Verificar se o link clicado é "Ativar meu JohnnyZap"
-            if (sectionName === "Ativar meu JohnnyZap") {
+            if (sectionName === "Gerenciar Instâncias") {
                 // Substituir o conteúdo de mainContent pelo formulário de ativação
                 mainContent.innerHTML = `
-    <div id="ativarTypeZap">
-        <h2>Ativar meu JohnnyZap</h2>
-        <p>Insira as informações necessárias para ativar seu JohnnyZap.</p>
-        <label for="urlField">URL do JohnnyZap:</label>
-        <input type="text" id="urlField" placeholder="http://seu_ip:3002/api/v1/sessions/">
-        <small>Endereço URL para conectar o JohnnyZap.</small><br>
-        
-        <label for="openAIKey">Chave OpenAI:</label>
-        <input type="text" id="openAIKey" placeholder="Sua chave OpenAI">
-        <small>Chave de API da OpenAI para autenticação.</small><br>
-
-        <label for="elevenLabsKey">Chave ElevenLabs:</label>
-        <input type="text" id="elevenLabsKey" placeholder="Sua chave ElevenLabs">
-        <small>Chave de API da ElevenLabs para autenticação.</small><br>
-
-        <button id="registerTypeZap">Registrar JohnnyZap</button>
-        <div id="response" style="margin-top: 20px;"></div>
-    </div>
+                    <div id="ativarTypeZap">
+                        <h2>Cadastrar Instância</h2>
+                        <p>Insira as informações necessárias para ativar seu JohnnyZap.</p>
+                        <label for="urlField">URL do JohnnyZap:</label>
+                        <input type="text" id="urlField" placeholder="http://seu_ip:3002/api/v1/sessions/">
+                        <small>Endereço URL para conectar o JohnnyZap.</small><br>
+                        
+                        <label for="instanciaNome">Nome da Instância Evolution:</label>
+                        <input type="text" id="instanciaNome" placeholder="Nome da sua instância Evolution">
+                        <small>Nome da sua instância Evolution.</small><br>
+            
+                        <label for="instanciaChave">Chave da Instância Evolution:</label>
+                        <input type="text" id="instanciaChave" placeholder="Chave da sua instância Evolution">
+                        <small>Chave da API da sua instância Evolution para autenticação.</small><br>
+            
+                        <label for="openAIKey">Chave OpenAI (Opcional):</label>
+                        <input type="text" id="openAIKey" placeholder="Sua chave OpenAI">
+                        <small>Chave de API da OpenAI para autenticação.</small><br>
+            
+                        <label for="elevenLabsKey">Chave ElevenLabs (Opcional):</label>
+                        <input type="text" id="elevenLabsKey" placeholder="Sua chave ElevenLabs">
+                        <small>Chave de API da ElevenLabs para autenticação.</small><br>
+            
+                        <button id="registerTypeZap">Registrar JohnnyZap</button>
+                        <div id="response" style="margin-top: 20px;"></div>
+                    </div>
                 `;
-
-
+            
                 // Adiciona o listener para o botão "Registrar JohnnyZap"
                 document.getElementById('registerTypeZap').addEventListener('click', function() {
                     const url = document.getElementById('urlField').value;
+                    const instanciaNome = document.getElementById('instanciaNome').value;
+                    const instanciaChave = document.getElementById('instanciaChave').value;
                     const openAIKey = document.getElementById('openAIKey').value;
                     const elevenLabsKey = document.getElementById('elevenLabsKey').value;                    
-
+            
                     // Enviar esses valores para o servidor via WebSocket
                     // Verifica se a URL é válida   
                     if (!(url.startsWith('http://') || url.startsWith('https://'))) {
-    alert('A URL deve começar com "http://" ou "https://".');
-    return; // Interrompe a execução para evitar o envio dos dados
+                        alert('A URL deve começar com "http://" ou "https://".');
+                        return; // Interrompe a execução para evitar o envio dos dados
                     } 
                     if (!url.endsWith('/sessions/')) {
-    alert('A URL deve terminar com "/sessions/".');
-    return;
+                        alert('A URL deve terminar com "/sessions/".');
+                        return;
                     }
-                    // Verificação da chave OpenAI
-                    if (!openAIKey.startsWith('sk-')) {
-    alert('A chave OpenAI deve começar com "sk-".');
-    return;
+                    // Verificação do nome da instância Evolution
+                    if (instanciaNome.trim() === '') {
+                        alert('O nome da instância Evolution é obrigatório.');
+                        return;
                     }
-                    // Verificação da chave ElevenLabs
-                    if (elevenLabsKey.length !== 32) {
-    alert('A chave ElevenLabs deve ter 32 caracteres.');
-    return;
+                    // Verificação da chave da instância Evolution
+                    if (instanciaChave.trim() === '') {
+                        alert('A chave da instância Evolution é obrigatória.');
+                        return;
                     }
-    
+                
                     alert('Seu JohnnyZap foi registrado com sucesso!');
-         
+                 
                     ws.send(JSON.stringify({
-                    action: 'registerTypeZap',
-                    data: {
-                    url: url,
-                    openAIKey: openAIKey,
-                    elevenLabsKey: elevenLabsKey
-                    }
+                        action: 'registerTypeZap',
+                        data: {
+                            url: url,
+                            instanciaNome: instanciaNome,
+                            instanciaChave: instanciaChave,
+                            openAIKey: openAIKey,
+                            elevenLabsKey: elevenLabsKey
+                        }
                     }));
-
                 });
-            }
+            }            
 
             // Verificar se o link clicado é "Gerenciar Fluxos"
             if (sectionName === "Gerenciar Fluxos") {

@@ -89,13 +89,15 @@ function readJSONFile(nomeArquivo) {
     const dadosAtuais = readJSONFile(DATABASE_FILE_SYSTEM);
   
     if (dadosAtuais[instanceName]) {
-      throw new Error('A instância já existe no banco de dados.');
+        throw new Error('A instância já existe no banco de dados.');
     }
   
     const objeto = { url_chat, openaikey, elevenlabskey, apiKeyEVO };
-  
     dadosAtuais[instanceName] = objeto;
+    
+    console.log('Dados antes de salvar:', dadosAtuais); // Log dos dados antes de salvar
     writeJSONFile(DATABASE_FILE_SYSTEM, dadosAtuais);
+    console.log('Dados salvos com sucesso.'); // Log confirmando que os dados foram salvos
   }
   
   function readInstance(instanceName) {

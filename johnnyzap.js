@@ -791,19 +791,19 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         db.updateCaption(remoteJid, caption);
                       }
                       if (formattedText.startsWith('!fim')) {
-                        if (existsDB(remoteJid)) {
-                          updateFlow(remoteJid, "inactive");
+                        if (db.existsDB(remoteJid)) {
+                          db.updateFlow(remoteJid, "inactive");
                         }
                       }
                       if (formattedText.startsWith('!optout')) {
-                        if (existsDB(remoteJid)) {
-                          updateOptout(remoteJid, true);
-                          removeFromDBTypebotV4(remoteJid);
+                        if (db.existsDB(remoteJid)) {
+                          db.updateOptout(remoteJid, true);
+                          db.removeFromDBTypebotV4(remoteJid);
                         }
                       }
                       if (formattedText.startsWith('!reiniciar')) {
-                        if (existsDB(remoteJid)) {
-                          deleteObject(remoteJid);
+                        if (db.existsDB(remoteJid)) {
+                          db.deleteObject(remoteJid);
                         }
                       }
                       if (formattedText.startsWith('!directmessage')) {
@@ -813,34 +813,34 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         const conteudo = partes.slice(2).join(' ');
             
                         johnny.EnviarTexto(destino, conteudo, db.readDelay(remoteJid), apiKeyEVO, instanceName);
-                        db.updateDelay(remoteJid, null);
+                        //db.updateDelay(remoteJid, null);
                         
                       }                     
                       if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
                         johnny.EnviarTexto(remoteJid, formattedText, db.readDelay(remoteJid), apiKeyEVO, instanceName);  
-                        db.updateDelay(remoteJid, null);
+                        //db.updateDelay(remoteJid, null);
                       }                                                    
                     }
                     if (message.type === 'image') {          
                         const url_target = message.content.url;
                         johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), db.readDelay(remoteJid), apiKeyEVO, instanceName);
-                        db.updateDelay(remoteJid, null);
+                        //db.updateDelay(remoteJid, null);
                         db.updateCaption(remoteJid, null);        
                     }                          
                     if (message.type === 'video') {          
                         const url_target = message.content.url;
                         johnny.EnviarVideo(remoteJid, url_target, db.readCaption(remoteJid), db.readDelay(remoteJid), apiKeyEVO, instanceName);
-                        db.updateDelay(remoteJid, null);
+                        //db.updateDelay(remoteJid, null);
                         db.updateCaption(remoteJid, null);
                     }                            
                     if (message.type === 'audio') {          
                         const url_target = message.content.url;
                         johnny.EnviarAudio(remoteJid, url_target, db.readDelay(remoteJid), apiKeyEVO, instanceName);
-                        db.updateDelay(remoteJid, null);
+                        //db.updateDelay(remoteJid, null);
                     }  
                                             
                   }                  
-                  updateInteract(remoteJid, 'done');
+                  db.updateInteract(remoteJid, 'done');
                 } catch (error) {
                   console.log(error);
                 }        

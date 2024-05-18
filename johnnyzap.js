@@ -2,9 +2,27 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const app = express();
+const pm2 = require('pm2');
+const fsp = fs.promises; // Para operações assíncronas baseadas em promessas
+const axios = require('axios');
+const Jimp = require('jimp');
+const fetch = require('node-fetch');
+const express = require('express');
+const WebSocket = require('ws');
+const socketIo = require('socket.io');
+const http = require('http');
+const https = require('https');
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+const path = require('path');
+const { Client, Buttons, List, MessageMedia, LocalAuth, Poll } = require('whatsapp-web.js');
+const OpenAI = require('openai');
+const { spawn } = require('child_process');
+const { promisify } = require('util');
+const writeFileAsync = promisify(fs.writeFile);
+
 const johnny = require('./johnnyFunctions');
 const db = require('./databaseFunctions');
-
 
 const instanceName = 'JohnnyEVO';
 const apiKeyEVO = 'f594jqci37r72wsr7e2czj';

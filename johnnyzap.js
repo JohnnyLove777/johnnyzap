@@ -13,7 +13,6 @@ const http = require('http');
 const https = require('https');
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-const { Client, Buttons, List, MessageMedia, LocalAuth, Poll } = require('whatsapp-web.js');
 const OpenAI = require('openai');
 const { spawn } = require('child_process');
 const { promisify } = require('util');

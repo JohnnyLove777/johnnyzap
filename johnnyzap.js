@@ -57,7 +57,7 @@ pm2.connect((err) => {
     });
 });
 
-if(!existsReloggin(instanceName)){
+if(!db.existsReloggin(instanceName)){
     db.addReloggin(instanceName,false);
 }
 

@@ -141,6 +141,7 @@ wss.on('connection', function connection(ws) {
             try {
                 // Adiciona o novo objeto no sistema
                 db.addObjectSystem(instanciaNome, url, openAIKey || '', elevenLabsKey || '', instanciaChave);
+                db.addObjectSystem(instanciaNome, url, "", "", instanciaChave);
                 console.log('JohnnyZap Instância registrada com sucesso! Pow pow tei tei, pra cima deles!!');
             } catch (error) {
                 ws.send(`Erro ao registrar JohnnyZap: ${error.message}`);

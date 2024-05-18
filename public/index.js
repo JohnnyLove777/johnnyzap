@@ -1,4 +1,4 @@
-const ws = new WebSocket(`ws://${window.location.hostname}:3030`);
+const ws = new WebSocket(`ws://${window.location.hostname}:8040`);
 
 // Quando o DOM estiver carregado, configure os listeners
 document.addEventListener('DOMContentLoaded', function() {    

@@ -23,6 +23,7 @@ const db = require('./databaseFunctions');
 const apiKeyEVO = 'f594jqci37r72wsr7e2czj';*/
 
 const DATABASE_FILE_TYPE = 'typebotDB.json';
+
 const db_length = 600;
 
 console.log("Bem-vindo ao JohnnyZap Inteligênte 1.5 - A Integração mais completa Typebot + Whatsapp + OpenAI e ElevenLabs");
@@ -134,6 +135,7 @@ wss.on('connection', function connection(ws) {
         
         // Verificar se a ação é de registrar JohnnyZap
         if (parsedMessage.action === 'registerTypeZap') {
+            console.log('Dados recebidos:', parsedMessage.data);
             const { url, instanciaNome, instanciaChave, openAIKey, elevenLabsKey } = parsedMessage.data;
         
             try {

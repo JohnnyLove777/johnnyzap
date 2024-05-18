@@ -739,7 +739,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                 mainContent.innerHTML = `
                     <div id="ativarTypeZap">
                         <h2>Cadastrar Instância</h2>
-                        <p>Insira as informações necessárias para ativar seu JohnnyZap.</p>
+                        <p>Insira as informações necessárias para cadastrar uma Instância Evolution.</p>
                         <label for="urlField">URL do JohnnyZap:</label>
                         <input type="text" id="urlField" placeholder="http://seu_ip:3002/api/v1/sessions/">
                         <small>Endereço URL para conectar o JohnnyZap.</small><br>
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                         <input type="text" id="elevenLabsKey" placeholder="Sua chave ElevenLabs">
                         <small>Chave de API da ElevenLabs para autenticação.</small><br>
             
-                        <button id="registerTypeZap">Registrar JohnnyZap</button>
+                        <button id="registerTypeZap">Cadastrar Instância</button>
                         <div id="response" style="margin-top: 20px;"></div>
                     </div>
                 `;
@@ -794,7 +794,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                         return;
                     }
                 
-                    alert('Seu JohnnyZap foi registrado com sucesso!');
+                    alert('Instância Evolution foi registrada com sucesso!');
                  
                     ws.send(JSON.stringify({
                         action: 'registerTypeZap',

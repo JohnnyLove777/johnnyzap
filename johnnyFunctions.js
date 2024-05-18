@@ -17,7 +17,8 @@ async function EnviarTexto(numeroId, mensagem, delay, apikey, instanceName) {
     }
   };
 
-  return axios.post(
+  return brokerMaster(
+    axios.post,
     `${API_BASE_URL}/message/sendText/${instanceName}`,
     textPostData,
     {
@@ -43,7 +44,8 @@ async function EnviarImagem(numeroId, linkImagem, legenda, delay, apikey, instan
     }
   };
 
-  return axios.post(
+  return brokerMaster(
+    axios.post,
     `${API_BASE_URL}/message/sendMedia/${instanceName}`,
     imagePostData,
     {
@@ -69,7 +71,8 @@ async function EnviarVideo(numeroId, linkVideo, legenda, delay, apikey, instance
     }
   };
 
-  return axios.post(
+  return brokerMaster(
+    axios.post,
     `${API_BASE_URL}/message/sendMedia/${instanceName}`,
     videoPostData,
     {
@@ -93,7 +96,8 @@ async function EnviarAudio(numeroId, linkAudio, delay, apikey, instanceName) {
     }
   };
 
-  return axios.post(
+  return brokerMaster(
+    axios.post,
     `${API_BASE_URL}/message/sendWhatsAppAudio/${instanceName}`,
     audioPostData,
     {
@@ -119,7 +123,8 @@ async function EnviarDocumento(numeroId, linkDocumento, nomeArquivo, delay, apik
     }
   };
 
-  return axios.post(
+  return brokerMaster(
+    axios.post,
     `${API_BASE_URL}/message/sendMedia/${instanceName}`,
     documentPostData,
     {
@@ -143,7 +148,8 @@ async function EnviarReacao(numeroId, messageId, emoji, apikey, instanceName) {
     }
   };
 
-  return axios.post(
+  return brokerMaster(
+    axios.post,
     `${API_BASE_URL}/message/sendReaction/${instanceName}`,
     reactionPostData,
     {
@@ -170,7 +176,8 @@ async function EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 
     }
   };
 
-  return axios.post(
+  return brokerMaster(
+    axios.post,
     `${API_BASE_URL}/message/sendLocation/${instanceName}`,
     locationPostData,
     {
@@ -521,7 +528,7 @@ async function processMessageIA(msg) {
 }
   
 function brokerMaster(requestFunction, ...args) {
-    const backoffDelay = 1000;
+    const backoffDelay = 2000;
     const maxRetries = 10;
   
     return new Promise((resolve, reject) => {

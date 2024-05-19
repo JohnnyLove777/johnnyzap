@@ -875,10 +875,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                         <th style="text-align: center; padding: 8px;">Gatilho</th>
                         <th style="text-align: center; padding: 8px;">Ação</th>
                     </tr>
-                </thead>
-                <tbody>
-                    ${tableRows}
-                </tbody>
+                </thead>               
             </table>
         </div>
         <div style="margin-top: 20px;">
@@ -891,6 +888,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
         // Re-atacha event listeners para os botões recém-criados
         attachEventListeners();
         ws.send(JSON.stringify({ action: 'atualizarLista' }));
+
             }
 
             // Verificar se o link clicado é "Gerenciar Respostas Rápidas"
@@ -909,10 +907,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                         <th style="text-align: center; padding: 8px;">Frase de Disparo</th>
                         <th style="text-align: center; padding: 8px;">Ação</th>
                     </tr>
-                </thead>
-                <tbody>
-                    ${tableRows}
-                </tbody>
+                </thead>                
             </table>
         </div>
         <div style="margin-top: 20px;">
@@ -944,10 +939,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                         <th style="text-align: center; padding: 8px;">Dias para o disparo</th>
                         <th style="text-align: center; padding: 8px;">Ação</th>
                     </tr>
-                </thead>
-                <tbody>
-                    ${tableRows}
-                </tbody>
+                </thead>                
             </table>
         </div>
         <div style="margin-top: 20px;">
@@ -977,10 +969,7 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                         <th style="text-align: center; padding: 8px;">ID do Grupo em Atividade</th>
                         <th style="text-align: center; padding: 8px;">Ação</th>
                     </tr>
-                </thead>
-                <tbody>
-                    ${tableRows}
-                </tbody>
+                </thead>                
             </table>
         </div>
         <div style="margin-top: 20px;">

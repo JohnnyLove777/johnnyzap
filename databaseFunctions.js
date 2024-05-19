@@ -191,7 +191,7 @@ function readJSONFile(nomeArquivo) {
 
 const DATABASE_FILE = "typesessaodb.json";
   
-function addObject(numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption, maxObjects) {
+function addObject(numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption, instanceName, maxObjects) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
   
     // Verificar a unicidade do numeroId
@@ -200,7 +200,7 @@ function addObject(numeroId, sessionid, numero, id, interact, fluxo, optout, flo
       throw new Error('O numeroId já existe no banco de dados.');
     }
   
-    const objeto = { numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption};
+    const objeto = { numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption, instanceName};
   
     if (dadosAtuais.length >= maxObjects) {
       // Excluir o objeto mais antigo
@@ -389,6 +389,20 @@ function readFlow(numeroId) {
     }
     const objeto = readMap(numeroId);
     return objeto ? objeto.flow : undefined;
+}
+
+function updateinstanceName(numeroId, instanceName) {
+  const dadosAtuais = readJSONFile(DATABASE_FILE);
+  const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
+  if (objeto) {
+    objeto.instanceName = instanceName;
+    writeJSONFile(DATABASE_FILE, dadosAtuais);
+  }
+}  
+
+function readinstanceName(numeroId) {
+  const objeto = readMap(numeroId);
+  return objeto ? objeto.instanceName : undefined;
 }
   
 //Fim das rotinas do banco de dados de gestão das sessões
@@ -1050,6 +1064,8 @@ module.exports = {
     readCaption,
     updateNextAudio,
     readNextAudio,
+    updateinstanceName,
+    readinstanceName,
     updateNextImage,
     readNextImage,
     updateSessionId,

@@ -576,7 +576,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
       const messages = response.data.messages;
   
       if (!db.existsDB(datafrom)) {
-        db.addObject(datafrom, response.data.sessionId, datafrom.replace(/\D/g, ''), dataid, 'typing', fluxo, false, "active", false, false, null, null, null, db_length);
+        db.addObject(datafrom, response.data.sessionId, datafrom.replace(/\D/g, ''), dataid, 'typing', fluxo, false, "active", false, false, null, null, null, instanceName, db_length);
       }    
       
       for (const message of messages){
@@ -736,7 +736,8 @@ app.post('/webhook/messages-upsert', async (req, res) => {
               }
             }    
         } else {
-            if (db.existsDB(remoteJid) && remoteJid.endsWith('@s.whatsapp.net') && db.readInteract(remoteJid) === 'done' && db.readId(remoteJid) !== messageId && db.readFlow(remoteJid) === "active"){
+            if (db.existsDB(remoteJid) && remoteJid.endsWith('@s.whatsapp.net') && db.readInteract(remoteJid) === 'done' && db.readId(remoteJid) !== messageId && db.readFlow(remoteJid) === "active" && db.readinstanceName(remoteJid) === instanceName){
+                            
               db.updateInteract(remoteJid, 'typing');
               db.updateId(remoteJid, messageId);
                 

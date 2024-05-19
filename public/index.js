@@ -28,21 +28,23 @@ mainContent.addEventListener('click', function(event) {
                 
                     // Conteúdo do modal
                     const modalContent = `
-                    <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
-                        <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                            <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
-                            <h2 style="color: white;">Adicionar Fluxo</h2>
-                            <label for="fluxoUrl" style="color: white;">URL do Fluxo:</label>
-                            <input type="text" id="fluxoUrl" placeholder="URL do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                            <label for="fluxoNome" style="color: white;">Nome do Fluxo:</label>
-                            <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                            <label for="fluxoGatilho" style="color: white;">Gatilho do Fluxo:</label>
-                            <input type="text" id="fluxoGatilho" placeholder="Gatilho do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                            <button id="confirmarAdicao" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Adição</button>
-                        </div>
-                        <div id="response" style="margin-top: 20px;"></div>
-                    </div>
-                `;
+    <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
+        <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
+            <h2 style="color: white;">Adicionar Fluxo</h2>
+            <label for="instanceName" style="color: white;">Nome da Instância:</label>
+            <input type="text" id="instanceName" placeholder="Nome da sua Instância" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoUrl" style="color: white;">URL do Fluxo:</label>
+            <input type="text" id="fluxoUrl" placeholder="URL do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoNome" style="color: white;">Nome do Fluxo:</label>
+            <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoGatilho" style="color: white;">Gatilho do Fluxo:</label>
+            <input type="text" id="fluxoGatilho" placeholder="Gatilho do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <button id="confirmarAdicao" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Adição</button>
+        </div>
+        <div id="response" style="margin-top: 20px;"></div>
+    </div>
+`;
                 
                     // Insere o modal no DOM
                     document.body.insertAdjacentHTML('beforeend', modalContent);
@@ -55,23 +57,29 @@ mainContent.addEventListener('click', function(event) {
                     // Agora, anexa o listener ao botão 'confirmarAdicao' dentro do modal
                     // Isso é feito imediatamente após a criação do modal para garantir que o listener seja adicionado corretamente
                     document.getElementById('confirmarAdicao').addEventListener('click', function() {
+                        const instanceName = document.getElementById('instanceName').value;
                         const urlFluxo = document.getElementById('fluxoUrl').value;
                         const nomeFluxo = document.getElementById('fluxoNome').value;
                         const gatilhoFluxo = document.getElementById('fluxoGatilho').value;
-                        
-                        ws.send(JSON.stringify({
-                            action: 'confirmarAdicao',
-                            data: {
-                                url: urlFluxo,
-                                nome: nomeFluxo,
-                                gatilho: gatilhoFluxo
-                            }
-                        }));
-                        alert('Fluxo adicionado com sucesso!');
-                        ws.send(JSON.stringify({ action: 'atualizarLista' }));
-                        //console.log('Adicionando fluxo...');
-                        document.getElementById('addFluxoModalBackdrop').remove(); // Fechar o modal após envio
-                    });
+                    
+                        // Verifique se todos os campos foram preenchidos
+                        if (instanceName && urlFluxo && nomeFluxo && gatilhoFluxo) {
+                            ws.send(JSON.stringify({
+                                action: 'confirmarAdicao',
+                                data: {
+                                    instanceName: instanceName,
+                                    url: urlFluxo,
+                                    nome: nomeFluxo,
+                                    gatilho: gatilhoFluxo
+                                }
+                            }));
+                            alert('Fluxo adicionado com sucesso!');
+                            ws.send(JSON.stringify({ action: 'atualizarLista' }));
+                            document.getElementById('addFluxoModalBackdrop').remove(); // Fechar o modal após envio
+                        } else {
+                            alert('Por favor, preencha todos os campos.');
+                        }
+                    });                   
     }
 
     // Identifica se o clique foi no botão "Adicionar Resposta Rápida"
@@ -83,20 +91,21 @@ mainContent.addEventListener('click', function(event) {
     
         // Conteúdo do modal
         const modalContent = `
-        <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
-            <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
-                <h2 style="color: white;">Adicionar Resposta Rápida</h2>                
-                <label for="fluxoNome" style="color: white;">Nome do Fluxo:</label>
-                <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo que será Disparado" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <label for="fluxoGatilho" style="color: white;">Frase de Disparo:</label>
-                <input type="text" id="fluxoGatilho" placeholder="Frase que irá disparar o Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <button id="confirmarAdicaoRapida" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Adição</button>
-            </div>
-            <div id="response" style="margin-top: 20px;"></div>
+    <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
+        <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
+            <h2 style="color: white;">Adicionar Resposta Rápida</h2>
+            <label for="instanceName" style="color: white;">Nome da Instância:</label>
+            <input type="text" id="instanceName" placeholder="Nome da sua Instância" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoNome" style="color: white;">Nome do Fluxo:</label>
+            <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo que será Disparado" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoGatilho" style="color: white;">Frase de Disparo:</label>
+            <input type="text" id="fluxoGatilho" placeholder="Frase que irá disparar o Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <button id="confirmarAdicaoRapida" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Adição</button>
         </div>
-    `;
-    
+        <div id="response" style="margin-top: 20px;"></div>
+    </div>
+`;    
         // Insere o modal no DOM
         document.body.insertAdjacentHTML('beforeend', modalContent);
     
@@ -108,21 +117,28 @@ mainContent.addEventListener('click', function(event) {
         // Agora, anexa o listener ao botão 'confirmarAdicao' dentro do modal
         // Isso é feito imediatamente após a criação do modal para garantir que o listener seja adicionado corretamente
         document.getElementById('confirmarAdicaoRapida').addEventListener('click', function() {
+            const instanceName = document.getElementById('instanceName').value;
             const nomeFluxo = document.getElementById('fluxoNome').value;
             const gatilhoFluxo = document.getElementById('fluxoGatilho').value;
-            
-            ws.send(JSON.stringify({
-                action: 'confirmarAdicaoRapida',
-                data: {                    
-                    nome: nomeFluxo,
-                    gatilho: gatilhoFluxo
-                }
-            }));
-            alert('Resposta Rápida adicionada com sucesso!');
-            ws.send(JSON.stringify({ action: 'atualizarListaRapida' }));
-            //console.log('Adicionando Resposta Rapida...');
-            document.getElementById('addFluxoModalBackdrop').remove(); // Fechar o modal após envio
+        
+            // Verifique se todos os campos foram preenchidos
+            if (instanceName && nomeFluxo && gatilhoFluxo) {
+                ws.send(JSON.stringify({
+                    action: 'confirmarAdicaoRapida',
+                    data: {                    
+                        instanceName: instanceName,
+                        nome: nomeFluxo,
+                        gatilho: gatilhoFluxo
+                    }
+                }));
+                alert('Resposta Rápida adicionada com sucesso!');
+                ws.send(JSON.stringify({ action: 'atualizarListaRapida' }));
+                document.getElementById('addFluxoModalBackdrop').remove(); // Fechar o modal após envio
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
         });
+        
     }
 
     // Identifica se o clique foi no botão "Atualizar Lista Remarketing"
@@ -146,21 +162,23 @@ mainContent.addEventListener('click', function(event) {
     
         // Conteúdo do modal
         const modalContent = `
-        <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
-            <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
-                <h2 style="color: white;">Adicionar Remarketing</h2>
-                <label for="fluxoUrl" style="color: white;">URL do Fluxo de Remarketing :</label>
-                <input type="text" id="fluxoUrl" placeholder="URL do seu Remarketing" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <label for="fluxoNome" style="color: white;">Nome do Fluxo Principal:</label>
-                <input type="text" id="fluxoNome" placeholder="Nome do Fluxo que o Remarketing está atrelado" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <label for="fluxoGatilho" style="color: white;">Tempo em Dias:</label>
-                <input type="text" id="fluxoGatilho" placeholder="Dias para o Disparo do Remarketing" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <button id="confirmarAdicaoRmkt" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Remarketing</button>
-            </div>
-            <div id="response" style="margin-top: 20px;"></div>
+    <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
+        <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
+            <h2 style="color: white;">Adicionar Remarketing</h2>
+            <label for="instanceName" style="color: white;">Nome da Instância:</label>
+            <input type="text" id="instanceName" placeholder="Nome da sua Instância" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoUrl" style="color: white;">URL do Fluxo de Remarketing:</label>
+            <input type="text" id="fluxoUrl" placeholder="URL do seu Remarketing" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoNome" style="color: white;">Nome do Fluxo Principal:</label>
+            <input type="text" id="fluxoNome" placeholder="Nome do Fluxo que o Remarketing está atrelado" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <label for="fluxoGatilho" style="color: white;">Tempo em Dias:</label>
+            <input type="text" id="fluxoGatilho" placeholder="Dias para o Disparo do Remarketing" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
+            <button id="confirmarAdicaoRmkt" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Remarketing</button>
         </div>
-    `;
+        <div id="response" style="margin-top: 20px;"></div>
+    </div>
+`;
     
         // Insere o modal no DOM
         document.body.insertAdjacentHTML('beforeend', modalContent);
@@ -173,23 +191,29 @@ mainContent.addEventListener('click', function(event) {
         // Agora, anexa o listener ao botão 'confirmarAdicao' dentro do modal
         // Isso é feito imediatamente após a criação do modal para garantir que o listener seja adicionado corretamente
         document.getElementById('confirmarAdicaoRmkt').addEventListener('click', function() {
+            const instanceName = document.getElementById('instanceName').value;
             const urlFluxo = document.getElementById('fluxoUrl').value;
             const nomeFluxo = document.getElementById('fluxoNome').value;
             const gatilhoFluxo = document.getElementById('fluxoGatilho').value;
-            
-            ws.send(JSON.stringify({
-                action: 'confirmarAdicaoRmkt',
-                data: {
-                    url: urlFluxo,
-                    nome: nomeFluxo,
-                    dias: gatilhoFluxo
-                }
-            }));
-            alert('Remarketing com sucesso!');
-            ws.send(JSON.stringify({ action: 'atualizarListaRmkt' }));
-            //console.log('Adicionando fluxo...');
-            document.getElementById('addFluxoModalBackdrop').remove(); // Fechar o modal após envio
-        });
+        
+            // Verifique se todos os campos foram preenchidos
+            if (instanceName && urlFluxo && nomeFluxo && gatilhoFluxo) {
+                ws.send(JSON.stringify({
+                    action: 'confirmarAdicaoRmkt',
+                    data: {
+                        instanceName: instanceName,
+                        url: urlFluxo,
+                        nome: nomeFluxo,
+                        dias: gatilhoFluxo
+                    }
+                }));
+                alert('Remarketing adicionado com sucesso!');
+                ws.send(JSON.stringify({ action: 'atualizarListaRmkt' }));
+                document.getElementById('addFluxoModalBackdrop').remove(); // Fechar o modal após envio
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        });        
     }
 
     let targetElement = event.target;
@@ -228,12 +252,16 @@ mainContent.addEventListener('click', function(event) {
         // Extrai o nome do fluxo do atributo data-fluxoNome
         //console.log('cliquei na lixeira');
         const fluxoNome = targetElement.getAttribute('data-fluxoNome');
+        const instanceName = targetElement.getAttribute('data-instanceName');
 
         // Envia a solicitação para excluir o fluxo ao servidor
         ws.send(JSON.stringify({
             action: 'excluirFluxo',
-            data: { nome: fluxoNome }
-        }));
+            data: {
+                instanceName: instanceName,
+                nome: fluxoNome
+            }
+        }));        
         alert('Fluxo excluido com sucesso!');
         ws.send(JSON.stringify({ action: 'atualizarLista' }));
         //console.log(`Solicitação para excluir fluxo: ${fluxoNome} enviada ao servidor.`);
@@ -244,11 +272,14 @@ mainContent.addEventListener('click', function(event) {
         //console.log('cliquei na lixeira rapida');
         // Extrai o nome do fluxo do atributo data-fluxoNome
         const fluxoNome = targetElement.getAttribute('data-fluxoNome');
+        const instanceName = targetElement.getAttribute('data-instanceName');
 
         // Envia a solicitação para excluir o fluxo ao servidor
         ws.send(JSON.stringify({
             action: 'excluirRapida',
-            data: { nome: fluxoNome }
+            data: {
+                instanceName: instanceName,
+                nome: fluxoNome }
         }));
         alert('Resposta Rápida excluida com sucesso!');
         ws.send(JSON.stringify({ action: 'atualizarListaRapida' }));
@@ -260,11 +291,15 @@ mainContent.addEventListener('click', function(event) {
         //console.log('cliquei na lixeira rapida');
         // Extrai o nome do fluxo do atributo data-fluxoNome
         const fluxoNome = targetElement.getAttribute('data-fluxoNome');
+        const instanceName = targetElement.getAttribute('data-instanceName');
 
         // Envia a solicitação para excluir o fluxo ao servidor
         ws.send(JSON.stringify({
             action: 'excluirRmkt',
-            data: { url: fluxoNome }
+            data: { 
+                 instanceName: instanceName,
+                 url: fluxoNome
+                 }
         }));
         alert('Remarketing excluido com sucesso!');
         ws.send(JSON.stringify({ action: 'atualizarListaRmkt' }));
@@ -276,11 +311,15 @@ mainContent.addEventListener('click', function(event) {
         //console.log('cliquei na lixeira rapida');
         // Extrai o nome do fluxo do atributo data-fluxoNome
         const fluxoNome = targetElement.getAttribute('data-fluxoNome');
+        const instanceName = targetElement.getAttribute('data-instanceName');
 
         // Envia a solicitação para excluir o fluxo ao servidor
         ws.send(JSON.stringify({
             action: 'excluirGrupo',
-            data: { name: fluxoNome }
+            data: { 
+                    instanceName: instanceName,
+                    name: fluxoNome
+                  }
         }));
         alert('Automação de Grupo excluida com sucesso!');
         ws.send(JSON.stringify({ action: 'atualizarGrupo' }));
@@ -379,47 +418,49 @@ mainContent.addEventListener('click', function(event) {
     }
     
     // Função para renderizar a lista de fluxos
-    function renderFluxosList(fluxos) {
-        if (!fluxos) return;
+function renderFluxosList(fluxos) {
+    if (!fluxos) return;
 
-        let tableRows = Object.values(fluxos).map(fluxo => `
-            <tr>
-                <td style="padding: 8px;">${fluxo.name}</td>
-                <td style="padding: 8px;">${fluxo.url_registro}</td>
-                <td style="padding: 8px;">${fluxo.gatilho}</td>
-                <td style="text-align: center; padding: 8px;">
-                    <button class="deleteFluxo" data-fluxoNome="${fluxo.name}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+    let tableRows = Object.values(fluxos).map(fluxo => `
+        <tr>
+            <td style="padding: 8px;">${fluxo.instanceName}</td>
+            <td style="padding: 8px;">${fluxo.name}</td>
+            <td style="padding: 8px;">${fluxo.url_registro}</td>
+            <td style="padding: 8px;">${fluxo.gatilho}</td>
+            <td style="text-align: center; padding: 8px;">
+                <button class="deleteFluxo" data-fluxoNome="${fluxo.name}" data-instanceName="${fluxo.instanceName}" style="border: none; background-color: transparent; cursor: pointer;">
+                    <i class="fas fa-trash" style="color: white;"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
 
-        mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Fluxos</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
-                                <th style="text-align: center; padding: 8px;">Nome</th>
-                                <th style="text-align: center; padding: 8px;">URL</th>
-                                <th style="text-align: center; padding: 8px;">Gatilho</th>
-                                <th style="text-align: center; padding: 8px;">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
-                    <button id="atualizarLista" style="cursor: pointer;">Atualizar Lista</button>
-                    <button id="adicionarFluxo" style="cursor: pointer;">Adicionar Fluxo</button>
-                </div>
+    mainContent.innerHTML = `
+        <div id="fluxosWrapper">
+            <h2>Gerenciar Fluxos</h2>
+            <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #007bff; color: white;">
+                            <th style="text-align: center; padding: 8px;">Instância</th>
+                            <th style="text-align: center; padding: 8px;">Nome</th>
+                            <th style="text-align: center; padding: 8px;">URL</th>
+                            <th style="text-align: center; padding: 8px;">Gatilho</th>
+                            <th style="text-align: center; padding: 8px;">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
             </div>
-        `;
-        // Re-atacha event listeners para os botões recém-criados
-        attachEventListeners();
-    }
+            <div style="margin-top: 20px;">
+                <button id="atualizarLista" style="cursor: pointer;">Atualizar Lista</button>
+                <button id="adicionarFluxo" style="cursor: pointer;">Adicionar Fluxo</button>
+            </div>
+        </div>
+    `;
+    // Re-atacha event listeners para os botões recém-criados
+    attachEventListeners();
+}
 
     // Função para renderizar a lista de respostas rápidas
     function renderFluxosListRapida(fluxos) {
@@ -462,86 +503,90 @@ mainContent.addEventListener('click', function(event) {
         attachEventListeners();
     }
 
-    // Função para renderizar a lista de fluxos de remarketing
-    function renderFluxosRmkt(fluxos) {
-        if (!fluxos) return;
+   // Função para renderizar a lista de fluxos de remarketing
+function renderFluxosRmkt(fluxos) {
+    if (!fluxos) return;
 
-        let tableRows = Object.values(fluxos).map(fluxo => `
-            <tr>
-                <td style="padding: 8px;">${fluxo.url_registro}</td>
-                <td style="padding: 8px;">${fluxo.name}</td>
-                <td style="padding: 8px;">${fluxo.disparo}</td>
-                <td style="text-align: center; padding: 8px;">
-                    <button class="deleteFluxoRmkt" data-fluxoNome="${fluxo.url_registro}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+    let tableRows = Object.values(fluxos).map(fluxo => `
+        <tr>
+            <td style="padding: 8px;">${fluxo.instanceName}</td>
+            <td style="padding: 8px;">${fluxo.url_registro}</td>
+            <td style="padding: 8px;">${fluxo.name}</td>
+            <td style="padding: 8px;">${fluxo.disparo}</td>
+            <td style="text-align: center; padding: 8px;">
+                <button class="deleteFluxoRmkt" data-fluxoNome="${fluxo.url_registro}" data-instanceName="${fluxo.instanceName}" style="border: none; background-color: transparent; cursor: pointer;">
+                    <i class="fas fa-trash" style="color: white;"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
 
-        mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Remarketing</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
+    mainContent.innerHTML = `
+        <div id="fluxosWrapper">
+            <h2>Gerenciar Remarketing</h2>
+            <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #007bff; color: white;">
+                            <th style="text-align: center; padding: 8px;">Instância</th>
                             <th style="text-align: center; padding: 8px;">URL do Fluxo de Remarketing</th>
                             <th style="text-align: center; padding: 8px;">Nome do Fluxo Principal</th>
                             <th style="text-align: center; padding: 8px;">Dias para o disparo</th>
                             <th style="text-align: center; padding: 8px;">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
+                        </tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
+            </div>
+            <div style="margin-top: 20px;">
                 <button id="atualizarListaRmkt" style="cursor: pointer;">Atualizar Fluxos de Remarketing</button>
                 <button id="adicionarRmkt" style="cursor: pointer;">Adicionar Remarketing</button>
-                </div>
             </div>
-        `;
-        // Re-atacha event listeners para os botões recém-criados
-        attachEventListeners();
-    }
+        </div>
+    `;
+    // Re-atacha event listeners para os botões recém-criados
+    attachEventListeners();
+}
 
-    // Função para renderizar a lista de grupos
-    function renderFluxosGrupos(fluxos) {
-        if (!fluxos) return;
+    // Função para renderizar a lista de fluxos de grupos
+function renderFluxosGrupos(fluxos) {
+    if (!fluxos) return;
 
-        let tableRows = Object.values(fluxos).map(fluxo => `
-            <tr>                
-                <td style="padding: 8px;">${fluxo.name}</td>                
-                <td style="text-align: center; padding: 8px;">
-                    <button class="deleteFluxoGrupo" data-fluxoNome="${fluxo.name}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+    let tableRows = Object.values(fluxos).map(fluxo => `
+        <tr>
+            <td style="padding: 8px;">${fluxo.instanceName}</td>
+            <td style="padding: 8px;">${fluxo.name}</td>
+            <td style="text-align: center; padding: 8px;">
+                <button class="deleteFluxoGrupo" data-fluxoNome="${fluxo.name}" data-instanceName="${fluxo.instanceName}" style="border: none; background-color: transparent; cursor: pointer;">
+                    <i class="fas fa-trash" style="color: white;"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
 
-        mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Automação de Grupo</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
-                            <th style="text-align: center; padding: 8px;">ID do Grupo em Atividade</th>                                                               
+    mainContent.innerHTML = `
+        <div id="fluxosWrapper">
+            <h2>Gerenciar Automação de Grupo</h2>
+            <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #007bff; color: white;">
+                            <th style="text-align: center; padding: 8px;">Instância</th>
+                            <th style="text-align: center; padding: 8px;">ID do Grupo em Atividade</th>
                             <th style="text-align: center; padding: 8px;">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
-                <button id="atualizarGrupo" style="cursor: pointer;">Atualizar Grupos Ativos</button> 
-                </div>
+                        </tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
             </div>
-        `;
-        // Re-atacha event listeners para os botões recém-criados
-        attachEventListeners();
-    }        
+            <div style="margin-top: 20px;">
+                <button id="atualizarGrupo" style="cursor: pointer;">Atualizar Grupos Ativos</button>
+            </div>
+        </div>
+    `;
+    // Re-atacha event listeners para os botões recém-criados
+    attachEventListeners();
+}       
 
 function attachEventListeners() {
     // Certifique-se de que o botão "Atualizar Lista" exista antes de tentar anexar um listener
@@ -666,6 +711,7 @@ if (iniciarCampanhaBtn) {
         const startPositionInput = document.getElementById('startPosition');
         const endPositionInput = document.getElementById('endPosition');
         const fluxoSelecionadoSelect = document.getElementById('fluxoSelecionado');
+        const instanceNameSelect = document.getElementById('instanceName');
 
         const listaleads = listaLeadsSelect.value;
         const minDelay = minDelayInput.value;
@@ -673,9 +719,11 @@ if (iniciarCampanhaBtn) {
         const startPosition = startPositionInput.value;
         const endPosition = endPositionInput.value;
         const fluxoSelecionado = fluxoSelecionadoSelect.value;
+        const instanceName = instanceNameSelect.value;
+        
 
         // Verifica se todos os campos foram preenchidos
-        if (!listaleads || !minDelay || !maxDelay || !startPosition || !endPosition || !fluxoSelecionado) {
+        if (!listaleads || !minDelay || !maxDelay || !startPosition || !endPosition || !fluxoSelecionado || !instanceName) {
             alert('Por favor, preencha todos os campos antes de iniciar a campanha.');
             return;
         }
@@ -694,6 +742,7 @@ if (iniciarCampanhaBtn) {
         ws.send(JSON.stringify({
             action: 'iniciarCampanha',
             data: {
+                instanceName: instanceName,
                 listaleads: listaleads, 
                 minDelay: parseInt(minDelay, 10),
                 maxDelay: parseInt(maxDelay, 10), 
@@ -814,26 +863,31 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                 // Substituir o conteúdo de mainContent pelo formulário de ativação                
 
                 mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Fluxos</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
-                                <th style="text-align: center; padding: 8px;">Nome</th>
-                                <th style="text-align: center; padding: 8px;">URL</th>
-                                <th style="text-align: center; padding: 8px;">Gatilho</th>
-                                <th style="text-align: center; padding: 8px;">Ação</th>
-                            </tr>
-                        </thead>                       
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
-                    <button id="atualizarLista" style="cursor: pointer;">Atualizar Lista</button>
-                    <button id="adicionarFluxo" style="cursor: pointer;">Adicionar Fluxo</button>
-                </div>
-            </div>
-        `;
+    <div id="fluxosWrapper">
+        <h2>Gerenciar Fluxos</h2>
+        <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #007bff; color: white;">
+                        <th style="text-align: center; padding: 8px;">Instância</th>
+                        <th style="text-align: center; padding: 8px;">Nome</th>
+                        <th style="text-align: center; padding: 8px;">URL</th>
+                        <th style="text-align: center; padding: 8px;">Gatilho</th>
+                        <th style="text-align: center; padding: 8px;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px;">
+            <button id="atualizarLista" style="cursor: pointer;">Atualizar Lista</button>
+            <button id="adicionarFluxo" style="cursor: pointer;">Adicionar Fluxo</button>
+        </div>
+    </div>
+`;
+
         // Re-atacha event listeners para os botões recém-criados
         attachEventListeners();
         ws.send(JSON.stringify({ action: 'atualizarLista' }));
@@ -844,25 +898,30 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                 // Substituir o conteúdo de mainContent pelo formulário de ativação                
 
                 mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Respostas Rápidas</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
-                                <th style="text-align: center; padding: 8px;">Nome</th>
-                                <th style="text-align: center; padding: 8px;">Frase de Disparo</th>
-                                <th style="text-align: center; padding: 8px;">Ação</th>                              
-                            </tr>
-                        </thead>                       
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
-                    <button id="atualizarListaRapida" style="cursor: pointer;">Atualizar Respostas Rápidas</button>
-                    <button id="adicionarRespostaRapida" style="cursor: pointer;">Adicionar Resposta Rápida</button>
-                </div>
-            </div>
-        `;
+    <div id="fluxosWrapper">
+        <h2>Gerenciar Respostas Rápidas</h2>
+        <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #007bff; color: white;">
+                        <th style="text-align: center; padding: 8px;">Instância</th>
+                        <th style="text-align: center; padding: 8px;">Nome</th>
+                        <th style="text-align: center; padding: 8px;">Frase de Disparo</th>
+                        <th style="text-align: center; padding: 8px;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px;">
+            <button id="atualizarListaRapida" style="cursor: pointer;">Atualizar Respostas Rápidas</button>
+            <button id="adicionarRespostaRapida" style="cursor: pointer;">Adicionar Resposta Rápida</button>
+        </div>
+    </div>
+`;
+
         // Re-atacha event listeners para os botões recém-criados
         attachEventListeners();
         ws.send(JSON.stringify({ action: 'atualizarListaRapida' }));
@@ -873,26 +932,31 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                 // Substituir o conteúdo de mainContent pelo formulário de ativação                
 
                 mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Remarketing</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
-                                <th style="text-align: center; padding: 8px;">URL do Fluxo de Remarketing</th>
-                                <th style="text-align: center; padding: 8px;">Nome do Fluxo Principal</th>
-                                <th style="text-align: center; padding: 8px;">Dias para o disparo</th>
-                                <th style="text-align: center; padding: 8px;">Ação</th>                              
-                            </tr>
-                        </thead>                       
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
-                    <button id="atualizarListaRmkt" style="cursor: pointer;">Atualizar Fluxos de Remarketing</button>
-                    <button id="adicionarRmkt" style="cursor: pointer;">Adicionar Remarketing</button>
-                </div>
-            </div>
-        `;
+    <div id="fluxosWrapper">
+        <h2>Gerenciar Remarketing</h2>
+        <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #007bff; color: white;">
+                        <th style="text-align: center; padding: 8px;">Instância</th>
+                        <th style="text-align: center; padding: 8px;">URL do Fluxo de Remarketing</th>
+                        <th style="text-align: center; padding: 8px;">Nome do Fluxo Principal</th>
+                        <th style="text-align: center; padding: 8px;">Dias para o disparo</th>
+                        <th style="text-align: center; padding: 8px;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px;">
+            <button id="atualizarListaRmkt" style="cursor: pointer;">Atualizar Fluxos de Remarketing</button>
+            <button id="adicionarRmkt" style="cursor: pointer;">Adicionar Remarketing</button>
+        </div>
+    </div>
+`;
+
         // Re-atacha event listeners para os botões recém-criados
         attachEventListeners();
         ws.send(JSON.stringify({ action: 'atualizarListaRmkt' }));
@@ -903,23 +967,27 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
                 // Substituir o conteúdo de mainContent pelo formulário de ativação                
 
                 mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Automação de Grupo</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
-                                <th style="text-align: center; padding: 8px;">ID do Grupo em Atividade</th>                                                               
-                                <th style="text-align: center; padding: 8px;">Ação</th>                              
-                            </tr>
-                        </thead>                       
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
-                    <button id="atualizarGrupo" style="cursor: pointer;">Atualizar Grupos Ativos</button>                    
-                </div>
-            </div>
-        `;
+    <div id="fluxosWrapper">
+        <h2>Gerenciar Automação de Grupo</h2>
+        <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #007bff; color: white;">
+                        <th style="text-align: center; padding: 8px;">Instância</th>
+                        <th style="text-align: center; padding: 8px;">ID do Grupo em Atividade</th>
+                        <th style="text-align: center; padding: 8px;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 20px;">
+            <button id="atualizarGrupo" style="cursor: pointer;">Atualizar Grupos Ativos</button>
+        </div>
+    </div>
+`;
         // Re-atacha event listeners para os botões recém-criados
         attachEventListeners();
         ws.send(JSON.stringify({ action: 'atualizarGrupo' }));
@@ -964,51 +1032,59 @@ document.addEventListener('DOMContentLoaded', attachEventListeners);
             if(sectionName === "Disparo de Mensagens em Massa"){
 
                 mainContent.innerHTML = `
-                <div id="massMessageDispatch">
-    <h2>Disparo de Mensagens em Massa</h2>
-    <label for="listaLeads">Selecione a Lista de Leads:</label>
-    <select id="listaLeads">
-        <!-- Opções de listas preenchidas dinamicamente com JavaScript -->
-        <option value="contatos1.json">Lista de Contatos 1</option>
-        <option value="contatos2.json">Lista de Contatos 2</option>
-    </select>
+    <div id="massMessageDispatch">
+        <h2>Disparo de Mensagens em Massa</h2>
+        
+        <label for="instanceName">Selecione a Instância:</label>
+        <select id="instanceName">
+            <!-- Opções de instâncias preenchidas dinamicamente com JavaScript -->
+            <option value="instancia1">Instância 1</option>
+            <option value="instancia2">Instância 2</option>
+        </select>
+        
+        <label for="listaLeads">Selecione a Lista de Leads:</label>
+        <select id="listaLeads">
+            <!-- Opções de listas preenchidas dinamicamente com JavaScript -->
+            <option value="contatos1.json">Lista de Contatos 1</option>
+            <option value="contatos2.json">Lista de Contatos 2</option>
+        </select>
 
-    <div class="input-group input-group-inline">
-    <div>
-        <label for="minDelay">Delay Mínimo (segundos):</label>
-        <input type="number" id="minDelay" placeholder="Min" />
-    </div>
-    <div>
-        <label for="maxDelay">Delay Máximo (segundos):</label>
-        <input type="number" id="maxDelay" placeholder="Max" />
-    </div>
-</div>
+        <div class="input-group input-group-inline">
+            <div>
+                <label for="minDelay">Delay Mínimo (segundos):</label>
+                <input type="number" id="minDelay" placeholder="Min" />
+            </div>
+            <div>
+                <label for="maxDelay">Delay Máximo (segundos):</label>
+                <input type="number" id="maxDelay" placeholder="Max" />
+            </div>
+        </div>
 
-<div class="input-group input-group-inline">
-    <div>
-        <label for="startPosition">Posição Inicial:</label>
-        <input type="number" id="startPosition" placeholder="Início" />
-    </div>
-    <div>
-        <label for="endPosition">Posição Final:</label>
-        <input type="number" id="endPosition" placeholder="Fim" />
-    </div>
-</div>
+        <div class="input-group input-group-inline">
+            <div>
+                <label for="startPosition">Posição Inicial:</label>
+                <input type="number" id="startPosition" placeholder="Início" />
+            </div>
+            <div>
+                <label for="endPosition">Posição Final:</label>
+                <input type="number" id="endPosition" placeholder="Fim" />
+            </div>
+        </div>
 
-    <label for="fluxoSelecionado">Selecione o Fluxo:</label>
-    <select id="fluxoSelecionado">
-        <!-- Opções de fluxos preenchidas dinamicamente com JavaScript -->
-        <option value="fluxoVendas">Fluxo de Vendas</option>
-        <option value="fluxoSuporte">Fluxo de Suporte</option>
-    </select>
+        <label for="fluxoSelecionado">Selecione o Fluxo:</label>
+        <select id="fluxoSelecionado">
+            <!-- Opções de fluxos preenchidas dinamicamente com JavaScript -->
+            <option value="fluxoVendas">Fluxo de Vendas</option>
+            <option value="fluxoSuporte">Fluxo de Suporte</option>
+        </select>
 
-    <div class="buttons-group">
-        <button id="iniciarCampanha">Iniciar Campanha</button>
-        <button id="pararCampanha">Parar Campanha</button>
+        <div class="buttons-group">
+            <button id="iniciarCampanha">Iniciar Campanha</button>
+            <button id="pararCampanha">Parar Campanha</button>
+        </div>
+        <div id="campaignStatus" class="campaign-status">Status da Campanha: Aguardando ação...</div>
     </div>
-    <div id="campaignStatus" class="campaign-status">Status da Campanha: Aguardando ação...</div>
-</div>
-                `;
+`;
 
                 // Solicita a atualização da lista de leads
         ws.send(JSON.stringify({ action: 'atualizarListaLeads' }));

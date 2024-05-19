@@ -177,22 +177,22 @@ wss.on('connection', function connection(ws) {
           });
         }
         else if (parsedMessage.action === 'excluirFluxo') {
-          const { nome } = parsedMessage.data;
+          const { instanceName , nome } = parsedMessage.data;
           //console.log(`Apertou botão para excluir fluxo: ${parsedMessage.data.nome}`);
-          db.removeFromDB(nome);
+          db.removeFromDB(instanceName,nome);
           // Aqui você pode adicionar a lógica para excluir um fluxo específico
           ws.send(`Fluxo ${parsedMessage.data.nome} excluído com sucesso!`);
         }
         else if (parsedMessage.action === 'confirmarAdicao') {
           //console.log('Apertou botão para confirmar adição');
-          const { url, nome, gatilho } = parsedMessage.data;
+          const { instanceName, url, nome, gatilho } = parsedMessage.data;
           //console.log(`Registrando JohnnyZap com URL: ${url}, Nome do Fluxo: ${nome}, Gatilho do Fluxo: ${gatilho}`);        
-          const typebotConfig = {
+          const typebotConfig = {            
             url_registro: url,
             gatilho: gatilho,
             name: nome
             };
-            db.addToDB(typebotConfig);
+            db.addToDB(instanceName,typebotConfig);
         }
         else if (parsedMessage.action === 'atualizarListaRapida') {
           //console.log('Apertou botão para atualizar lista rapida');
@@ -225,21 +225,21 @@ wss.on('connection', function connection(ws) {
           });
         }
         else if (parsedMessage.action === 'excluirRapida') {
-          const { nome } = parsedMessage.data;
+          const { instanceName, nome } = parsedMessage.data;
           //console.log(`Apertou botão para excluir fluxo rapido: ${parsedMessage.data.nome}`);
-          db.removeFromDBTypebotV2(nome);
+          db.removeFromDBTypebotV2(instanceName,nome);
           // Aqui você pode adicionar a lógica para excluir um fluxo específico
           ws.send(`Fluxo Rapido ${parsedMessage.data.nome} excluído com sucesso!`);
         }
         else if (parsedMessage.action === 'confirmarAdicaoRapida') {
           //console.log('Apertou botão para confirmar adição');
-          const { nome, gatilho } = parsedMessage.data;
+          const { instanceName , nome, gatilho } = parsedMessage.data;
           //console.log(`Registrando Resposta Rapida, Nome do Fluxo: ${nome}, Frase de Disparo: ${gatilho}`);        
           const typebotConfig = {
             gatilho: gatilho,
             name: nome
             };
-            db.addToDBTypebotV2(nome,typebotConfig);
+            db.addToDBTypebotV2(instanceName,nome,typebotConfig);
         }
         else if (parsedMessage.action === 'atualizarListaRmkt') {
           //console.log('Apertou botão para atualizar lista rapida');
@@ -272,22 +272,22 @@ wss.on('connection', function connection(ws) {
           });
         }
         else if (parsedMessage.action === 'excluirRmkt') {
-          const { url } = parsedMessage.data;
+          const { instanceName , url } = parsedMessage.data;
           //console.log(`Apertou botão para excluir remarketing: ${parsedMessage.data.url}`);
-          db.removeFromDBTypebotV3(url);
+          db.removeFromDBTypebotV3(instanceName,url);
           // Aqui você pode adicionar a lógica para excluir um fluxo específico
           ws.send(`Remarketing ${parsedMessage.data.url} excluído com sucesso!`);
         }
         else if (parsedMessage.action === 'confirmarAdicaoRmkt') {
          // console.log('Apertou botão para confirmar adição');
-          const {url, nome, dias } = parsedMessage.data;
+          const { instanceName , url, nome, dias } = parsedMessage.data;
           //console.log(`Registrando Remarketing, Nome do Fluxo: ${nome}, Dias para Disparo: ${dias}`);        
           const urlRmkt = url;
           const typebotConfig = {
           disparo: `${dias}`,
           name: nome
           };
-          db.addToDBTypebotV3(urlRmkt,typebotConfig);
+          db.addToDBTypebotV3(instanceName,urlRmkt,typebotConfig);
         }
         else if (parsedMessage.action === 'atualizarGrupo') {
           //console.log('Apertou botão para atualizar grupo');
@@ -324,7 +324,7 @@ wss.on('connection', function connection(ws) {
           });
         }
         else if (parsedMessage.action === 'excluirGrupo') {
-          const { name } = parsedMessage.data;
+          const { instanceName , name } = parsedMessage.data;
           //console.log(`Apertou botão para excluir grupo: ${parsedMessage.data.name}`);
           db.removeFromDBTypebotV5(name);
           // Aqui você pode adicionar a lógica para excluir um fluxo específico
@@ -575,8 +575,8 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
   
       const messages = response.data.messages;
   
-      if (!db.existsDB(datafrom)) {
-        db.addObject(datafrom, response.data.sessionId, datafrom.replace(/\D/g, ''), dataid, 'typing', fluxo, false, "active", false, false, null, null, null, db_length);
+      if (!db.existsDB(instanceName,datafrom)) {
+        db.addObject(instanceName,datafrom, response.data.sessionId, datafrom.replace(/\D/g, ''), dataid, 'typing', fluxo, false, "active", false, false, null, null, null, db_length);
       }    
       
       for (const message of messages){
@@ -626,22 +626,22 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
           }
           if (formattedText.startsWith('!caption')) {
             const caption = formattedText.split(" ")[1];
-            db.updateCaption(datafrom, caption);
+            db.updateCaption(instanceName,datafrom, caption);
           }
           if (formattedText.startsWith('!fim')) {
-            if (db.existsDB(datafrom)) {
-              db.updateFlow(datafrom, "inactive");
+            if (db.existsDB(instanceName,datafrom)) {
+              db.updateFlow(instanceName,datafrom, "inactive");
             }
           }
           if (formattedText.startsWith('!optout')) {
-            if (db.existsDB(datafrom)) {
-              db.updateOptout(datafrom, true);
-              db.removeFromDBTypebotV4(datafrom);
+            if (db.existsDB(instanceName,datafrom)) {
+              db.updateOptout(instanceName,datafrom, true);
+              db.removeFromDBTypebotV4(instanceName,datafrom);
             }
           }
           if (formattedText.startsWith('!reiniciar')) {
-            if (db.existsDB(datafrom)) {
-              db.deleteObject(datafrom);           
+            if (db.existsDB(instanceName,datafrom)) {
+              db.deleteObject(instanceName,datafrom);           
             }
           }          
           if (formattedText.startsWith('!directmessage')) {
@@ -651,7 +651,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             const conteudo = partes.slice(2).join(' ');
 
             johnny.EnviarTexto(destino, conteudo, 2000, apiKeyEVO, instanceName);
-            db.updateDelay(datafrom, null);
+            db.updateDelay(instanceName,datafrom, null);
             
           }                 
           if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
@@ -661,15 +661,15 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
         }
         if (message.type === 'image') {          
             const url_target = message.content.url;
-            johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName);
+            johnny.EnviarImagem(datafrom, url_target, db.readCaption(instanceName,datafrom), 2000, apiKeyEVO, instanceName);
             //db.updateDelay(datafrom, null);
-            db.updateCaption(datafrom, null);        
+            db.updateCaption(instanceName,datafrom, null);        
         }                          
         if (message.type === 'video') {          
             const url_target = message.content.url;
-            johnny.EnviarVideo(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName);
+            johnny.EnviarVideo(datafrom, url_target, db.readCaption(instanceName,datafrom), 2000, apiKeyEVO, instanceName);
             //db.updateDelay(datafrom, null);
-            db.updateCaption(datafrom, null);
+            db.updateCaption(instanceName,datafrom, null);
         }                            
         if (message.type === 'audio') {          
             const url_target = message.content.url;
@@ -678,12 +678,12 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
         } 
       }
 
-      if(db.existsDB(datafrom)){
-        db.updateSessionId(datafrom, response.data.sessionId);
-        db.updateId(datafrom, dataid);
-        db.updateInteract(datafrom, 'done');
-        db.updateFlow(datafrom, "active");
-        db.updateName(datafrom, fluxo);
+      if(db.existsDB(instanceName,datafrom)){
+        db.updateSessionId(instanceName,datafrom, response.data.sessionId);
+        db.updateId(instanceName,datafrom, dataid);
+        db.updateInteract(instanceName,datafrom, 'done');
+        db.updateFlow(instanceName,datafrom, "active");
+        db.updateName(instanceName,datafrom, fluxo);
       }     
     } catch (error) {
       console.log(error);
@@ -716,7 +716,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
         // Coisas aqui
       } else if (!fromMe) {
            
-        const typebotKey = await db.readFluxo(remoteJid);
+        const typebotKey = await db.readFluxo(instanceName,remoteJid);
 
         if (!typebotKey) {
             if (remoteJid.endsWith('@s.whatsapp.net')) {
@@ -736,14 +736,14 @@ app.post('/webhook/messages-upsert', async (req, res) => {
               }
             }    
         } else {
-            if (db.existsDB(remoteJid) && remoteJid.endsWith('@s.whatsapp.net') && db.readInteract(remoteJid) === 'done' && db.readId(remoteJid) !== messageId && db.readFlow(remoteJid) === "active"){
-              db.updateInteract(remoteJid, 'typing');
-              db.updateId(remoteJid, messageId);
+            if (db.existsDB(instanceName,remoteJid) && remoteJid.endsWith('@s.whatsapp.net') && db.readInteract(instanceName,remoteJid) === 'done' && db.readId(instanceName,remoteJid) !== messageId && db.readFlow(instanceName,remoteJid) === "active"){
+              db.updateInteract(instanceName,remoteJid, 'typing');
+              db.updateId(instanceName,remoteJid, messageId);
                 
-                const sessionId = await db.readSessionId(remoteJid);                
-                db.updateNextAudio(remoteJid, false);
-                db.updateNextImage(remoteJid, false);
-                const chaturl = `${db.readInstanceURL(instanceName).url_chat}${sessionId}/continueChat`;
+                const sessionId = await db.readSessionId(instanceName,remoteJid);                
+                db.updateNextAudio(instanceName,remoteJid, false);
+                db.updateNextImage(instanceName,remoteJid, false);
+                const chaturl = `${db.readInstanceURL(instanceName,instanceName).url_chat}${sessionId}/continueChat`;
 
                 //const content = await processMessageIA(msg);
                 let content = "N/A";
@@ -818,22 +818,22 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                       }
                       if (formattedText.startsWith('!caption')) {
                         const caption = formattedText.split(" ")[1];
-                        db.updateCaption(remoteJid, caption);
+                        db.updateCaption(instanceName,remoteJid, caption);
                       }
                       if (formattedText.startsWith('!fim')) {
-                        if (db.existsDB(remoteJid)) {
-                          db.updateFlow(remoteJid, "inactive");
+                        if (db.existsDB(instanceName,remoteJid)) {
+                          db.updateFlow(instanceName,remoteJid, "inactive");
                         }
                       }
                       if (formattedText.startsWith('!optout')) {
-                        if (db.existsDB(remoteJid)) {
-                          db.updateOptout(remoteJid, true);
-                          db.removeFromDBTypebotV4(remoteJid);
+                        if (db.existsDB(instanceName,remoteJid)) {
+                          db.updateOptout(instanceName,remoteJid, true);
+                          db.removeFromDBTypebotV4(instanceName,remoteJid);
                         }
                       }
                       if (formattedText.startsWith('!reiniciar')) {
-                        if (db.existsDB(remoteJid)) {
-                          db.deleteObject(remoteJid);
+                        if (db.existsDB(instanceName,remoteJid)) {
+                          db.deleteObject(instanceName,remoteJid);
                         }
                       }
                       if (formattedText.startsWith('!directmessage')) {
@@ -853,15 +853,15 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                     }
                     if (message.type === 'image') {          
                         const url_target = message.content.url;
-                        johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName);
+                        johnny.EnviarImagem(remoteJid, url_target, db.readCaption(instanceName,remoteJid), 2000, apiKeyEVO, instanceName);
                         //db.updateDelay(remoteJid, null);
-                        db.updateCaption(remoteJid, null);        
+                        db.updateCaption(instanceName,remoteJid, null);        
                     }                          
                     if (message.type === 'video') {          
                         const url_target = message.content.url;
-                        johnny.EnviarVideo(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName);
+                        johnny.EnviarVideo(remoteJid, url_target, db.readCaption(instanceName,remoteJid), 2000, apiKeyEVO, instanceName);
                         //db.updateDelay(remoteJid, null);
-                        db.updateCaption(remoteJid, null);
+                        db.updateCaption(instanceName,remoteJid, null);
                     }                            
                     if (message.type === 'audio') {          
                         const url_target = message.content.url;
@@ -870,7 +870,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                     }  
                                             
                   }                  
-                  db.updateInteract(remoteJid, 'done');
+                  db.updateInteract(instanceName,remoteJid, 'done');
                 } catch (error) {
                   console.log(error);
                 }        

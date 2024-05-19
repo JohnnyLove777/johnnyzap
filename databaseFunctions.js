@@ -3,24 +3,6 @@ const path = require('path');
 
 const DATABASE_FILE_RELOGGIN = 'relogginDB.json';
 
-function readJSONFile(filename) {
-  try {
-    const data = fs.readFileSync(path.join(__dirname, filename), 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error(`Error reading ${filename}:`, error);
-    return [];
-  }
-}
-
-function writeJSONFile(filename, data) {
-  try {
-    fs.writeFileSync(path.join(__dirname, filename), JSON.stringify(data, null, 2), 'utf8');
-  } catch (error) {
-    console.error(`Error writing ${filename}:`, error);
-  }
-}
-
 function addReloggin(sessionid, reconnect) {
   const relogginData = readJSONFile(DATABASE_FILE_RELOGGIN);
 
@@ -61,22 +43,8 @@ function existsReloggin(sessionid) {
 }
 
 //Rotinas da gestão de dados
-
-function readJSONFile(nomeArquivo) {
-    if (fs.existsSync(nomeArquivo)) {
-      const dados = fs.readFileSync(nomeArquivo);
-      return JSON.parse(dados);
-    } else {
-      return [];
-    }
-  }
   
-  function writeJSONFile(nomeArquivo, dados) {
-    const dadosJSON = JSON.stringify(dados, null, 2);
-    fs.writeFileSync(nomeArquivo, dadosJSON);
-  }
-  
-  // Dados do sistema
+// Dados do sistema
   
   const DATABASE_FILE_SYSTEM = 'typeSystemDB.json';
 
@@ -185,277 +153,347 @@ function readJSONFile(nomeArquivo) {
     };
   }
   
-  // Fim dos dados do sistema
+// Fim dos dados do sistema
   
-  //Gestão de dados do controle das sessões
+//Gestão de dados do controle das sessões
 
 const DATABASE_FILE = "typesessaodb.json";
-  
-function addObject(numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption, maxObjects) {
+
+function readJSONFile(filename) {
+    const fs = require('fs');
+    if (fs.existsSync(filename)) {
+        const data = fs.readFileSync(filename, 'utf8');
+        return JSON.parse(data);
+    }
+    return {};
+}
+
+function writeJSONFile(filename, data) {
+    const fs = require('fs');
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2), 'utf8');
+}
+
+function addObject(instanceName, numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption, maxObjects) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-  
-    // Verificar a unicidade do numeroId
-    const existeNumeroId = dadosAtuais.some(objeto => objeto.numeroId === numeroId);
+
+    if (!dadosAtuais[instanceName]) {
+        dadosAtuais[instanceName] = [];
+    }
+
+    const existeNumeroId = dadosAtuais[instanceName].some(objeto => objeto.numeroId === numeroId);
     if (existeNumeroId) {
-      throw new Error('O numeroId já existe no banco de dados.');
+        throw new Error('O numeroId já existe no banco de dados para esta instância.');
     }
-  
-    const objeto = { numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption};
-  
-    if (dadosAtuais.length >= maxObjects) {
-      // Excluir o objeto mais antigo
-      dadosAtuais.shift();
+
+    const objeto = { numeroId, sessionid, numero, id, interact, fluxo, optout, flow, nextAudio, nextImage, prompt, delay, caption };
+
+    if (dadosAtuais[instanceName].length >= maxObjects) {
+        // Excluir o objeto mais antigo
+        dadosAtuais[instanceName].shift();
     }
-  
-    dadosAtuais.push(objeto);
+
+    dadosAtuais[instanceName].push(objeto);
     writeJSONFile(DATABASE_FILE, dadosAtuais);
 }
-  
-function readMap(numeroId) {
+
+function readMap(instanceName, numeroId) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
+    if (!dadosAtuais[instanceName]) {
+        return null;
+    }
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
     return objeto;
 }
-  
-function deleteObject(numeroId) {
+
+function deleteObject(instanceName, numeroId) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const novosDados = dadosAtuais.filter(obj => obj.numeroId !== numeroId);
-    writeJSONFile(DATABASE_FILE, novosDados);
-}
-  
-function existsDB(numeroId) {
-    const dadosAtuais = readJSONFile(DATABASE_FILE);
-    return dadosAtuais.some(obj => obj.numeroId === numeroId);
-}
-  
-function updatePrompt(numeroId, prompt) {
-    const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
-    if (objeto) {
-      objeto.prompt = prompt;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+    if (!dadosAtuais[instanceName]) {
+        return;
     }
-}  
-  
-function readPrompt(numeroId) {
-    const objeto = readMap(numeroId);
+    const novosDados = dadosAtuais[instanceName].filter(obj => obj.numeroId !== numeroId);
+    dadosAtuais[instanceName] = novosDados;
+    writeJSONFile(DATABASE_FILE, dadosAtuais);
+}
+
+function existsDB(instanceName, numeroId) {
+    const dadosAtuais = readJSONFile(DATABASE_FILE);
+    return dadosAtuais[instanceName] && dadosAtuais[instanceName].some(obj => obj.numeroId === numeroId);
+}
+
+function updatePrompt(instanceName, numeroId, prompt) {
+    const dadosAtuais = readJSONFile(DATABASE_FILE);
+    if (!dadosAtuais[instanceName]) {
+        return;
+    }
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
+    if (objeto) {
+        objeto.prompt = prompt;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
+    }
+}
+
+function readPrompt(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.prompt : undefined;
 }
 
-function updateDelay(numeroId, delay) {
+function updateDelay(instanceName, numeroId, delay) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
-    if (objeto) {
-      objeto.delay = delay;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+    if (!dadosAtuais[instanceName]) {
+        return;
     }
-}  
-  
-function readDelay(numeroId) {
-    const objeto = readMap(numeroId);
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
+    if (objeto) {
+        objeto.delay = delay;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
+    }
+}
+
+function readDelay(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.delay : undefined;
 }
 
-function updateCaption(numeroId, caption) {
+function updateCaption(instanceName, numeroId, caption) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
-    if (objeto) {
-      objeto.caption = caption;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+    if (!dadosAtuais[instanceName]) {
+        return;
     }
-}  
-  
-function readCaption(numeroId) {
-    const objeto = readMap(numeroId);
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
+    if (objeto) {
+        objeto.caption = caption;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
+    }
+}
+
+function readCaption(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.caption : undefined;
 }
-  
-function updateNextAudio(numeroId, nextAudio) {
+
+function updateNextAudio(instanceName, numeroId, nextAudio) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
-    if (objeto) {
-      objeto.nextAudio = nextAudio;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+    if (!dadosAtuais[instanceName]) {
+        return;
     }
-}  
-  
-function readNextAudio(numeroId) {
-    const objeto = readMap(numeroId);
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
+    if (objeto) {
+        objeto.nextAudio = nextAudio;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
+    }
+}
+
+function readNextAudio(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.nextAudio : undefined;
 }
-  
-function updateNextImage(numeroId, nextImage) {
+
+function updateNextImage(instanceName, numeroId, nextImage) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
-    if (objeto) {
-      objeto.nextImage = nextImage;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+    if (!dadosAtuais[instanceName]) {
+        return;
     }
-}  
-  
-function readNextImage(numeroId) {
-    const objeto = readMap(numeroId);
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
+    if (objeto) {
+        objeto.nextImage = nextImage;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
+    }
+}
+
+function readNextImage(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.nextImage : undefined;
 }
-  
-function updateSessionId(numeroId, sessionid) {
+
+function updateSessionId(instanceName, numeroId, sessionid) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
+    if (!dadosAtuais[instanceName]) {
+        return;
+    }
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
     if (objeto) {
-      objeto.sessionid = sessionid;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+        objeto.sessionid = sessionid;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
     }
 }
-  
-function readSessionId(numeroId) {
-    const objeto = readMap(numeroId);
+
+function readSessionId(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.sessionid : undefined;
 }
-  
-function updateId(numeroId, id) {
+
+function updateId(instanceName, numeroId, id) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
-    if (objeto) {
-      objeto.id = id;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+    if (!dadosAtuais[instanceName]) {
+        return;
     }
-}  
-  
-function readId(numeroId) {
-    const objeto = readMap(numeroId);
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
+    if (objeto) {
+        objeto.id = id;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
+    }
+}
+
+function readId(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.id : undefined;
 }
-  
-function updateInteract(numeroId, interact) {
+
+function updateInteract(instanceName, numeroId, interact) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
+    if (!dadosAtuais[instanceName]) {
+        return;
+    }
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
     if (objeto) {
-      objeto.interact = interact;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+        objeto.interact = interact;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
     }
 }
-  
-function readInteract(numeroId) {
-    const objeto = readMap(numeroId);
+
+function readInteract(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.interact : undefined;
 }
-  
-function updateFluxo(numeroId, fluxo) {
+
+function updateFluxo(instanceName, numeroId, fluxo) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
+    if (!dadosAtuais[instanceName]) {
+        return;
+    }
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
     if (objeto) {
-      objeto.fluxo = fluxo;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+        objeto.fluxo = fluxo;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
     }
 }
-  
-function readFluxo(numeroId) {
-      if (!existsDB(numeroId)) {     
-        return undefined;
-    }
-    const objeto = readMap(numeroId);
+
+function readFluxo(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.fluxo : undefined;
 }
-  
-function updateOptout(numeroId, optout) {
+
+function updateOptout(instanceName, numeroId, optout) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
+    if (!dadosAtuais[instanceName]) {
+        return;
+    }
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
     if (objeto) {
-      objeto.optout = optout;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+        objeto.optout = optout;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
     }
 }
-  
-function readOptout(numeroId) {
-      if (!existsDB(numeroId)) {     
-        return undefined;
-    }
-    const objeto = readMap(numeroId);
+
+function readOptout(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.optout : undefined;
 }
-  
-function updateFlow(numeroId, flow) {
+
+function updateFlow(instanceName, numeroId, flow) {
     const dadosAtuais = readJSONFile(DATABASE_FILE);
-    const objeto = dadosAtuais.find(obj => obj.numeroId === numeroId);
+    if (!dadosAtuais[instanceName]) {
+        return;
+    }
+    const objeto = dadosAtuais[instanceName].find(obj => obj.numeroId === numeroId);
     if (objeto) {
-      objeto.flow = flow;
-      writeJSONFile(DATABASE_FILE, dadosAtuais);
+        objeto.flow = flow;
+        writeJSONFile(DATABASE_FILE, dadosAtuais);
     }
 }
-  
-function readFlow(numeroId) {
-      if (!existsDB(numeroId)) {     
-        return undefined;
-    }
-    const objeto = readMap(numeroId);
+
+function readFlow(instanceName, numeroId) {
+    const objeto = readMap(instanceName, numeroId);
     return objeto ? objeto.flow : undefined;
 }
   
 //Fim das rotinas do banco de dados de gestão das sessões
   
 const DATABASE_FILE_TYPE = 'typebotDB.json';
-  
+
 function initializeDB() {
-    // Verifica se o arquivo do banco de dados já existe
+    const fs = require('fs');
     if (!fs.existsSync(DATABASE_FILE_TYPE)) {
-        // Se não existir, inicializa com os dados de typebotConfigs
         const typebotConfigs = {
             typebot1: {
-                url_registro: 'https://seutypebot/api/v1/typebots/funil-base-f8uqcdj/startChat',      
+                url_registro: 'https://seutypebot/api/v1/typebots/funil-base-f8uqcdj/startChat',
                 gatilho: "gatilho do seu fluxo",
-                name: "nomedofluxo"
+                name: "nomedofluxo",
+                instanceName: "instance1"
             }
         };
-  
+
         const db = {};
         Object.values(typebotConfigs).forEach(config => {
-            db[config.name] = config;
+            if (!db[config.instanceName]) {
+                db[config.instanceName] = {};
+            }
+            db[config.instanceName][config.name] = config;
         });
-  
+
         writeJSONFile(DATABASE_FILE_TYPE, db);
     } else {
-        // Se já existir, mantém os dados existentes
         console.log('Banco de dados principal já existe e não será sobrescrito.');
     }
 }
-  
-function addToDB(config) {
-      const db = readJSONFile(DATABASE_FILE_TYPE);
-      db[config.name] = config;
-      writeJSONFile(DATABASE_FILE_TYPE, db);
-}
-  
-function removeFromDB(name) {
-      const db = readJSONFile(DATABASE_FILE_TYPE);
-      delete db[name];
-      writeJSONFile(DATABASE_FILE_TYPE, db);
-}
-  
-function updateDB(name, newConfig) {
-      const db = readJSONFile(DATABASE_FILE_TYPE);
-      if (db[name]) {
-          db[name] = newConfig;
-          writeJSONFile(DATABASE_FILE_TYPE, db);
-      }
-}
-  
-function readFromDB(name) {
-      const db = readJSONFile(DATABASE_FILE_TYPE);
-      return db[name];
-}
-  
-function listAllFromDB() {
-      return readJSONFile(DATABASE_FILE_TYPE);
-}
-  
-function findURLByNameV1(name) {
+
+function addToDB(instanceName, config) {
     const db = readJSONFile(DATABASE_FILE_TYPE);
-    
-    // Procura por uma entrada no banco de dados que corresponda ao nome fornecido
-    const entry = db[name];
-  
-    // Retorna a URL se uma entrada correspondente for encontrada
-    return entry ? entry.url_registro : null;
+    if (!db[instanceName]) {
+        db[instanceName] = {};
+    }
+    config.instanceName = instanceName;
+    db[instanceName][config.name] = config;
+    writeJSONFile(DATABASE_FILE_TYPE, db);
+}
+
+function removeFromDB(instanceName, name) {
+    const db = readJSONFile(DATABASE_FILE_TYPE);
+    if (db[instanceName]) {
+        delete db[instanceName][name];
+        if (Object.keys(db[instanceName]).length === 0) {
+            delete db[instanceName];
+        }
+        writeJSONFile(DATABASE_FILE_TYPE, db);
+    }
+}
+
+function updateDB(instanceName, name, newConfig) {
+    const db = readJSONFile(DATABASE_FILE_TYPE);
+    if (db[instanceName] && db[instanceName][name]) {
+        newConfig.instanceName = instanceName;
+        db[instanceName][name] = newConfig;
+        writeJSONFile(DATABASE_FILE_TYPE, db);
+    }
+}
+
+function readFromDB(instanceName, name) {
+    const db = readJSONFile(DATABASE_FILE_TYPE);
+    return db[instanceName] ? db[instanceName][name] : null;
+}
+
+function listAllFromDB(instanceName) {
+    const db = readJSONFile(DATABASE_FILE_TYPE);
+    return db[instanceName] || {};
+}
+
+function findURLByNameV1(instanceName, name) {
+    const db = readJSONFile(DATABASE_FILE_TYPE);
+    return db[instanceName] && db[instanceName][name] ? db[instanceName][name].url_registro : null;
+}
+
+function readJSONFile(filename) {
+    const fs = require('fs');
+    if (fs.existsSync(filename)) {
+        const data = fs.readFileSync(filename, 'utf8');
+        return JSON.parse(data);
+    }
+    return {};
+}
+
+function writeJSONFile(filename, data) {
+    const fs = require('fs');
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2), 'utf8');
 }
   
 // Inicio das rotinas do banco de dados para guardar multiplos fluxos de Typebot
@@ -617,68 +655,78 @@ function readMapSelf(numeroId) {
 // Inicio das rotinas de cadastro de respostas rápidas
   
 const DATABASE_FILE_TYPEBOT_V2 = 'typebotDBV2.json';
-  
+
 function initializeDBTypebotV2() {
-    // Verifica se o arquivo do banco de dados já existe
+    const fs = require('fs');
     if (!fs.existsSync(DATABASE_FILE_TYPEBOT_V2)) {
-        // Se não existir, inicializa com um objeto vazio
         const db = {};
         writeJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2, db);
     } else {
-        // Se já existir, mantém os dados existentes
         console.log('Banco de dados V2 já existe e não será sobrescrito.');
     }
 }
-  
-function addToDBTypebotV2(name, config) {
-      const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
-      db[name] = config;
-      writeJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2, db);
-}
-  
-function removeFromDBTypebotV2(name) {
-      const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
-      delete db[name];
-      writeJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2, db);
-}
-  
-function updateDBTypebotV2(name, newConfig) {
-      const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
-      if (db[name]) {
-          db[name] = newConfig;
-          writeJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2, db);
-      }
-}
-  
-function readFromDBTypebotV2(name) {
-      const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
-      return db[name];
-}
-  
-function findFlowNameByTriggerV2(trigger) {
+
+function addToDBTypebotV2(instanceName, name, config) {
     const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
-    
-    // Procura por uma entrada no banco de dados que corresponda ao gatilho fornecido
-    const entry = Object.entries(db).find(([key, value]) => value.gatilho === trigger);
-  
-    // Retorna o nome do fluxo se uma entrada correspondente for encontrada
+    if (!db[instanceName]) {
+        db[instanceName] = {};
+    }
+    config.instanceName = instanceName;
+    db[instanceName][name] = config;
+    writeJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2, db);
+}
+
+function removeFromDBTypebotV2(instanceName, name) {
+    const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
+    if (db[instanceName]) {
+        delete db[instanceName][name];
+        if (Object.keys(db[instanceName]).length === 0) {
+            delete db[instanceName];
+        }
+        writeJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2, db);
+    }
+}
+
+function updateDBTypebotV2(instanceName, name, newConfig) {
+    const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
+    if (db[instanceName] && db[instanceName][name]) {
+        newConfig.instanceName = instanceName;
+        db[instanceName][name] = newConfig;
+        writeJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2, db);
+    }
+}
+
+function readFromDBTypebotV2(instanceName, name) {
+    const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
+    return db[instanceName] ? db[instanceName][name] : null;
+}
+
+function findFlowNameByTriggerV2(instanceName, trigger) {
+    const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
+    if (!db[instanceName]) {
+        return null;
+    }
+    const entry = Object.entries(db[instanceName]).find(([key, value]) => value.gatilho === trigger);
     return entry ? entry[1].name : null;
 }
-  
-function listAllFromDBTypebotV2() {
-      return readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
+
+function listAllFromDBTypebotV2(instanceName) {
+    const db = readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2);
+    return db[instanceName] || {};
 }
-  
+
 function readJSONFileTypebotV2(filename) {
-      try {
-          return JSON.parse(fs.readFileSync(filename, 'utf8'));
-      } catch (error) {
-          return {};
-      }
+    const fs = require('fs');
+    try {
+        return JSON.parse(fs.readFileSync(filename, 'utf8'));
+    } catch (error) {
+        return {};
+    }
 }
-  
+
 function writeJSONFileTypebotV2(filename, data) {
-      fs.writeFileSync(filename, JSON.stringify(data, null, 2));
+    const fs = require('fs');
+    fs.writeFileSync(filename, JSON.stringify(data, null, 2));
 }
 
 // Inicio das rotinas de disparo do remarketing
@@ -686,67 +734,76 @@ function writeJSONFileTypebotV2(filename, data) {
 const DATABASE_FILE_TYPEBOT_V3 = 'typebotDBV3.json';
 
 function initializeDBTypebotV3() {
-  // Verifica se o arquivo do banco de dados já existe
-  if (!fs.existsSync(DATABASE_FILE_TYPEBOT_V3)) {
-      // Se não existir, inicializa com um objeto vazio
-      const db = {};
-      writeJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3, db);
-  } else {
-      // Se já existir, mantém os dados existentes
-      console.log('Banco de dados V3 já existe e não será sobrescrito.');
-  }
+    const fs = require('fs');
+    if (!fs.existsSync(DATABASE_FILE_TYPEBOT_V3)) {
+        const db = {};
+        writeJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3, db);
+    } else {
+        console.log('Banco de dados V3 já existe e não será sobrescrito.');
+    }
 }
 
-function addToDBTypebotV3(url, disparoConfig) {
-  const db = readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3);
-  
-  // Adiciona ao banco de dados
-  db[url] = {
-      ...disparoConfig,
-      url_registro: url,
-      disparo: disparoConfig.disparo // Converte a data futura para string ISO
-  };
-
-  writeJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3, db);
-}
-
-function removeFromDBTypebotV3(url) {
+function addToDBTypebotV3(instanceName, url, disparoConfig) {
     const db = readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3);
-    delete db[url];
+    if (!db[instanceName]) {
+        db[instanceName] = {};
+    }
+
+    db[instanceName][url] = {
+        ...disparoConfig,
+        url_registro: url,
+        disparo: disparoConfig.disparo.toISOString(), // Converte a data futura para string ISO
+        instanceName: instanceName
+    };
+
     writeJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3, db);
 }
 
-function updateDBTypebotV3(url, newDisparoConfig) {
+function removeFromDBTypebotV3(instanceName, url) {
     const db = readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3);
-    if (db[url]) {
-        db[url] = {
+    if (db[instanceName]) {
+        delete db[instanceName][url];
+        if (Object.keys(db[instanceName]).length === 0) {
+            delete db[instanceName];
+        }
+        writeJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3, db);
+    }
+}
+
+function updateDBTypebotV3(instanceName, url, newDisparoConfig) {
+    const db = readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3);
+    if (db[instanceName] && db[instanceName][url]) {
+        db[instanceName][url] = {
             ...newDisparoConfig,
-            disparo: newDisparoConfig.disparo.toISOString()  // Garante que a data é uma string
+            disparo: newDisparoConfig.disparo.toISOString(),  // Garante que a data é uma string
+            instanceName: instanceName
         };
         writeJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3, db);
     }
 }
 
-function readFromDBTypebotV3(url) {
+function readFromDBTypebotV3(instanceName, url) {
     const db = readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3);
-    const config = db[url];
+    const config = db[instanceName] ? db[instanceName][url] : null;
     if (config && config.disparo) {
         config.disparo = new Date(config.disparo);  // Reconverte a string para um objeto Date
     }
     return config;
 }
 
-function listAllFromDBTypebotV3() {
+function listAllFromDBTypebotV3(instanceName) {
     const db = readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3);
-    Object.keys(db).forEach(key => {
-        if (db[key].disparo) {
-            db[key].disparo = new Date(db[key].disparo);  // Reconverte as strings para objetos Date
+    const instanceData = db[instanceName] || {};
+    Object.keys(instanceData).forEach(key => {
+        if (instanceData[key].disparo) {
+            instanceData[key].disparo = new Date(instanceData[key].disparo);  // Reconverte as strings para objetos Date
         }
     });
-    return db;
+    return instanceData;
 }
 
 function readJSONFileTypebotV3(filename) {
+    const fs = require('fs');
     try {
         return JSON.parse(fs.readFileSync(filename, 'utf8'));
     } catch (error) {
@@ -755,6 +812,7 @@ function readJSONFileTypebotV3(filename) {
 }
 
 function writeJSONFileTypebotV3(filename, data) {
+    const fs = require('fs');
     fs.writeFileSync(filename, JSON.stringify(data, null, 2));
 }
 
@@ -765,105 +823,132 @@ function writeJSONFileTypebotV3(filename, data) {
 const DATABASE_FILE_TYPEBOT_V4 = 'typebotDBV4.json';
 
 async function initializeDBTypebotV4() {
-  if (!fs.existsSync(DATABASE_FILE_TYPEBOT_V4)) {
-    const db = {};
-    writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
-  } else {
-    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+    const fs = require('fs');
+    if (!fs.existsSync(DATABASE_FILE_TYPEBOT_V4)) {
+        const db = {};
+        writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
+    } else {
+        const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+        for (const instanceName in db) {
+            if (db.hasOwnProperty(instanceName)) {
+                for (const whatsappNumber in db[instanceName]) {
+                    if (db[instanceName].hasOwnProperty(whatsappNumber)) {
+                        db[instanceName][whatsappNumber].forEach(agendamentoConfig => {
+                            const dataAgendamento = new Date(agendamentoConfig.dataAgendamento);
+                            if (dataAgendamento > new Date()) {
+                                // Chama scheduleAction diretamente para cada agendamento
+                                scheduleAction(dataAgendamento, agendamentoConfig.url_registro, agendamentoConfig.name, whatsappNumber, agendamentoConfig.msg);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+}
 
-    for (const whatsappNumber in db) {
-      if (db.hasOwnProperty(whatsappNumber)) {
-        db[whatsappNumber].forEach(agendamentoConfig => {
-          const dataAgendamento = new Date(agendamentoConfig.dataAgendamento);
-          if (dataAgendamento > new Date()) {
-            // Chama scheduleAction diretamente para cada agendamento
-            scheduleAction(dataAgendamento, agendamentoConfig.url_registro, agendamentoConfig.name, whatsappNumber, agendamentoConfig.msg);
-          }
+function addToDBTypebotV4(instanceName, whatsappNumber, agendamentoConfig) {
+    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+    if (!db[instanceName]) {
+        db[instanceName] = {};
+    }
+    if (!db[instanceName][whatsappNumber]) {
+        db[instanceName][whatsappNumber] = [];
+    }
+    db[instanceName][whatsappNumber].push({
+        ...agendamentoConfig,
+        dataAgendamento: agendamentoConfig.dataAgendamento.toISOString(),
+        instanceName: instanceName
+    });
+    writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
+}
+
+function updateDBTypebotV4(instanceName, whatsappNumber, url, newAgendamentoConfig) {
+    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+    if (db[instanceName] && db[instanceName][whatsappNumber]) {
+        const index = db[instanceName][whatsappNumber].findIndex(config => config.url_registro === url);
+        if (index !== -1) {
+            db[instanceName][whatsappNumber][index] = {
+                ...newAgendamentoConfig,
+                dataAgendamento: newAgendamentoConfig.dataAgendamento.toISOString(),
+                instanceName: instanceName
+            };
+            writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
+        }
+    }
+}
+
+function removeFromDBTypebotV4withNumberAndURL(instanceName, whatsappNumber, url) {
+    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+    if (db[instanceName] && db[instanceName][whatsappNumber]) {
+        db[instanceName][whatsappNumber] = db[instanceName][whatsappNumber].filter(config => config.url_registro !== url);
+        writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
+    }
+}
+
+function removeFromDBTypebotV4(instanceName, whatsappNumber) {
+    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+    if (db[instanceName]) {
+        delete db[instanceName][whatsappNumber];
+        if (Object.keys(db[instanceName]).length === 0) {
+            delete db[instanceName];
+        }
+        writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
+    }
+}
+
+function removeFromDBTypebotV4withURL(instanceName, url) {
+    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+    let isModified = false;
+
+    if (db[instanceName]) {
+        for (const whatsappNumber in db[instanceName]) {
+            if (db[instanceName].hasOwnProperty(whatsappNumber)) {
+                db[instanceName][whatsappNumber] = db[instanceName][whatsappNumber].filter(config => config.url_registro !== url);
+                if (db[instanceName][whatsappNumber].length === 0) {
+                    delete db[instanceName][whatsappNumber];
+                }
+                isModified = true;
+            }
+        }
+        if (Object.keys(db[instanceName]).length === 0) {
+            delete db[instanceName];
+        }
+    }
+
+    if (isModified) {
+        writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
+    }
+}
+
+function readFromDBTypebotV4(instanceName, whatsappNumber) {
+    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
+    const config = db[instanceName] ? db[instanceName][whatsappNumber] : null;
+    if (config) {
+        config.forEach(item => {
+            if (item.dataAgendamento) {
+                item.dataAgendamento = new Date(item.dataAgendamento);
+            }
         });
-      }
-    }
-  }
-}
-
-// Supõe-se que as funções scheduleAction, writeJSONFileTypebotV4 e readJSONFileTypebotV4 estejam definidas
-
-function addToDBTypebotV4(whatsappNumber, agendamentoConfig) {
-  const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
-  if (!db[whatsappNumber]) {
-    db[whatsappNumber] = [];
-  }
-  db[whatsappNumber].push({
-    ...agendamentoConfig,
-    dataAgendamento: agendamentoConfig.dataAgendamento.toISOString()
-  });
-  writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
-}
-
-function updateDBTypebotV4(whatsappNumber, url, newAgendamentoConfig) {
-  const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
-  if (db[whatsappNumber]) {
-    const index = db[whatsappNumber].findIndex(config => config.url_registro === url);
-    if (index !== -1) {
-      db[whatsappNumber][index] = {
-        ...newAgendamentoConfig,
-        dataAgendamento: newAgendamentoConfig.dataAgendamento.toISOString()
-      };
-      writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
-    }
-  }
-}
-
-function removeFromDBTypebotV4withNumberAndURL(whatsappNumber, url) {
-  const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
-  if (db[whatsappNumber]) {
-    db[whatsappNumber] = db[whatsappNumber].filter(config => config.url_registro !== url);
-    writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
-  }
-}
-
-function removeFromDBTypebotV4(whatsappNumber) {
-  const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
-  delete db[whatsappNumber];
-  writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
-}
-
-function removeFromDBTypebotV4withURL(url) {
-  const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
-  let isModified = false;
-
-  for (const whatsappNumber in db) {
-      if (db.hasOwnProperty(whatsappNumber) && db[whatsappNumber].url_registro === url) {
-          delete db[whatsappNumber];
-          isModified = true;
-      }
-  }
-
-  // Atualiza o arquivo apenas se alguma alteração foi feita
-  if (isModified) {
-      writeJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4, db);
-  }
-}
-
-function readFromDBTypebotV4(whatsappNumber) {
-    const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
-    const config = db[whatsappNumber];
-    if (config && config.dataAgendamento) {
-        config.dataAgendamento = new Date(config.dataAgendamento);
     }
     return config;
 }
 
-function listAllFromDBTypebotV4() {
+function listAllFromDBTypebotV4(instanceName) {
     const db = readJSONFileTypebotV4(DATABASE_FILE_TYPEBOT_V4);
-    Object.keys(db).forEach(key => {
-        if (db[key].dataAgendamento) {
-            db[key].dataAgendamento = new Date(db[key].dataAgendamento);
-        }
+    const instanceData = db[instanceName] || {};
+    Object.keys(instanceData).forEach(whatsappNumber => {
+        instanceData[whatsappNumber].forEach(item => {
+            if (item.dataAgendamento) {
+                item.dataAgendamento = new Date(item.dataAgendamento);
+            }
+        });
     });
-    return db;
+    return instanceData;
 }
 
 function readJSONFileTypebotV4(filename) {
+    const fs = require('fs');
     try {
         return JSON.parse(fs.readFileSync(filename, 'utf8'));
     } catch (error) {
@@ -872,10 +957,13 @@ function readJSONFileTypebotV4(filename) {
 }
 
 function writeJSONFileTypebotV4(filename, data) {
+    const fs = require('fs');
     fs.writeFileSync(filename, JSON.stringify(data, null, 2));
 }
 
 // Final das rotinas de disparo de Remarketing Agendados
+
+// Excluir todas agora?
 
 // Inicio das rotinas de disparo para Grupos
 

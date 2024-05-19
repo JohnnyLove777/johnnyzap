@@ -23,6 +23,7 @@ const db = require('./databaseFunctions');
 const apiKeyEVO = 'f594jqci37r72wsr7e2czj';*/
 
 const DATABASE_FILE_TYPE = 'typebotDB.json';
+const DATABASE_FILE_TYPEBOT_V2 = 'typebotDBV2.json';
 
 const db_length = 600;
 
@@ -690,6 +691,33 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
     }
 }
 
+async function processMessageV2(messageBody, datafrom, dataid, instanceName, apiKeyEVO) {
+  const typebotConfigsV2 = db.readJSONFileTypebotV2(DATABASE_FILE_TYPEBOT_V2); // Lê os dados do banco de dados V2
+
+  for (const key in typebotConfigsV2) {
+      if (typebotConfigsV2.hasOwnProperty(key)) {
+          const typebotConfigV2 = typebotConfigsV2[key];
+          
+          // Verifica se a mensagem corresponde ao gatilho
+          if (typebotConfigV2.gatilho === messageBody) {
+              const name = typebotConfigV2.name;
+              
+              // Agora, busca o registro correspondente no banco de dados principal
+              const mainTypebotConfigs = db.readJSONFile(DATABASE_FILE_TYPE);
+              const mainTypebotConfig = mainTypebotConfigs[name];
+
+              if (mainTypebotConfig) {
+                  // Se encontrou o registro, executa a adição da sessão
+                  //deleteObject(msgfrom);                  
+                  await createSessionJohnny(datafrom, dataid, mainTypebotConfig.url_registro, mainTypebotConfig.name, instanceName, apiKeyEVO);
+                  //await scheduleRemarketing(mainTypebotConfig.name, msgfrom, msg);
+                  break; // Sai do loop após encontrar o gatilho correspondente
+              }
+          }
+      }
+  }
+}
+
 // Listener de Mensagem Recebida e Enviada
 app.post('/webhook/messages-upsert', async (req, res) => {
     
@@ -713,7 +741,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
       //console.log(`fromMe: ${fromMe}`);
   
       if (fromMe) {
-        // Coisas aqui
+        await processMessageV2(messageBody, remoteJid, messageId, instanceName, apiKeyEVO);
       } else if (!fromMe) {
            
         const typebotKey = await db.readFluxo(remoteJid);

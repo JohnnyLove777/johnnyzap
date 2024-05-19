@@ -414,14 +414,7 @@ const DATABASE_FILE_TYPE = 'typebotDB.json';
 function initializeDB() {
     const fs = require('fs');
     if (!fs.existsSync(DATABASE_FILE_TYPE)) {
-        const typebotConfigs = {
-            typebot1: {
-                url_registro: 'https://seutypebot/api/v1/typebots/funil-base-f8uqcdj/startChat',
-                gatilho: "gatilho do seu fluxo",
-                name: "nomedofluxo",
-                instanceName: "instance1"
-            }
-        };
+        const typebotConfigs = {};
 
         const db = {};
         Object.values(typebotConfigs).forEach(config => {

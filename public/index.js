@@ -463,45 +463,48 @@ function renderFluxosList(fluxos) {
 }
 
     // Função para renderizar a lista de respostas rápidas
-    function renderFluxosListRapida(fluxos) {
-        if (!fluxos) return;
+function renderFluxosListRapida(fluxos) {
+    if (!fluxos) return;
 
-        let tableRows = Object.values(fluxos).map(fluxo => `
-            <tr>
-                <td style="padding: 8px;">${fluxo.name}</td>                
-                <td style="padding: 8px;">${fluxo.gatilho}</td>
-                <td style="text-align: center; padding: 8px;">
-                    <button class="deleteFluxoRapida" data-fluxoNome="${fluxo.name}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+    let tableRows = Object.values(fluxos).map(fluxo => `
+        <tr>
+            <td style="padding: 8px;">${fluxo.instanceName}</td>
+            <td style="padding: 8px;">${fluxo.name}</td>
+            <td style="padding: 8px;">${fluxo.gatilho}</td>
+            <td style="text-align: center; padding: 8px;">
+                <button class="deleteFluxoRapida" data-fluxoNome="${fluxo.name}" data-instanceName="${fluxo.instanceName}" style="border: none; background-color: transparent; cursor: pointer;">
+                    <i class="fas fa-trash" style="color: white;"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
 
-        mainContent.innerHTML = `
-            <div id="fluxosWrapper">
-                <h2>Gerenciar Respostas Rápidas</h2>
-                <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #007bff; color: white;">
-                                <th style="text-align: center; padding: 8px;">Nome</th>                                
-                                <th style="text-align: center; padding: 8px;">Frase de Disparo</th>
-                                <th style="text-align: center; padding: 8px;">Ação</th>                                
-                            </tr>
-                        </thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px;">
+    mainContent.innerHTML = `
+        <div id="fluxosWrapper">
+            <h2>Gerenciar Respostas Rápidas</h2>
+            <div id="fluxosList" style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #007bff; color: white;">
+                            <th style="text-align: center; padding: 8px;">Instância</th>
+                            <th style="text-align: center; padding: 8px;">Nome</th>
+                            <th style="text-align: center; padding: 8px;">Frase de Disparo</th>
+                            <th style="text-align: center; padding: 8px;">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
+            </div>
+            <div style="margin-top: 20px;">
                 <button id="atualizarListaRapida" style="cursor: pointer;">Atualizar Respostas Rápidas</button>
                 <button id="adicionarRespostaRapida" style="cursor: pointer;">Adicionar Resposta Rápida</button>
-                </div>
             </div>
-        `;
-        // Re-atacha event listeners para os botões recém-criados
-        attachEventListeners();
-    }
+        </div>
+    `;
+    // Re-atacha event listeners para os botões recém-criados
+    attachEventListeners();
+}
+
 
    // Função para renderizar a lista de fluxos de remarketing
 function renderFluxosRmkt(fluxos) {

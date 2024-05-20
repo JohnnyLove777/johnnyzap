@@ -667,8 +667,8 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
           }
           if (formattedText.startsWith('!local')) {
             const partes = formattedText.split(' ');            
-            const latitude = partes[1];
-            const longitude = partes[2];
+            const latitude = parseFloat(partes[1]);
+            const longitude = parseFloat(partes[2]);
             
             // Extrair o nome e o endereço entre colchetes
             const regexNome = /\[(.*?)\]/;
@@ -682,8 +682,8 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             const enderecoMatch = restanteTexto.match(regexNome);
             const endereco = enderecoMatch ? enderecoMatch[1] : '';
         
-            johnny.EnviarLocalizacao(datafrom, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
-          }                             
+            johnny.EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
+          }                                    
           if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
             johnny.EnviarTexto(datafrom, formattedText, 2000, apiKeyEVO, instanceName);  
             //db.updateDelay(datafrom, null);          
@@ -1000,8 +1000,8 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                       }
                       if (formattedText.startsWith('!local')) {
                         const partes = formattedText.split(' ');            
-                        const latitude = partes[1];
-                        const longitude = partes[2];
+                        const latitude = parseFloat(partes[1]);
+                        const longitude = parseFloat(partes[2]);
                         
                         // Extrair o nome e o endereço entre colchetes
                         const regexNome = /\[(.*?)\]/;

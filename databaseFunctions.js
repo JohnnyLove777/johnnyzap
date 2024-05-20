@@ -778,6 +778,58 @@ function writeJSONFileTypebotV3(filename, data) {
 
 const DATABASE_FILE_TYPEBOT_V4 = 'typebotDBV4.json';
 
+function scheduleAction(dataFutura, url, name, datafrom, messageId, instanceName, apiKeyEVO) {
+  const agora = new Date();
+  const delay = dataFutura.getTime() - agora.getTime(); // Calcula o tempo de espera em milissegundos
+
+  if (delay <= 0) {
+      console.log("A data de disparo já passou. Executando agora.");
+      if(!readOptout(datafrom)){
+      deleteObject(datafrom);
+      processMessageRMKT(datafrom, messageId, url, name, instanceName, apiKeyEVO);
+      removeFromDBTypebotV4withNumberAndURL(datafrom, url);
+      }
+  } else {
+      console.log(`Agendando ação de remarketing para ${dataFutura} (URL: ${url})`);
+      
+      // Agendar a ação
+      setTimeout(() => {
+          if(!readOptout(datafrom)){
+          deleteObject(datafrom);          
+          processMessageRMKT(datafrom, messageId, url, name, instanceName, apiKeyEVO);
+          removeFromDBTypebotV4withNumberAndURL(datafrom, url);
+          }
+      }, delay);
+
+      // Registrar no banco de dados V4
+      const agendamentoConfig = {
+          url_registro: url,
+          dataAgendamento: dataFutura,
+          name: name,
+          messageId: messageId,
+          instanceName: instanceName,
+          apiKeyEVO: apiKeyEVO
+      };
+      
+      console.log(`Agendamento registrado para: ${datafrom} - URL: ${url} - Data: ${dataFutura}`);
+  }
+}
+
+async function processMessageRMKT(datafrom, messageId, url, name, instanceName, apiKeyEVO) {
+  const typebotConfigsV3 = readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3); // Lê os dados do banco de dados V3
+
+  // Busca a configuração correspondente à URL fornecida
+  const typebotConfigV3 = typebotConfigsV3[url];
+
+  if (typebotConfigV3) {
+      // Se encontrou o registro, executa a adição da sessão
+      deleteObject(datafrom);
+      await createSessionJohnny(datafrom, messageId, url, name, instanceName, apiKeyEVO);
+  } else {
+      console.log(`Nenhuma configuração encontrada para a URL: ${url}`);
+  }
+}
+
 async function initializeDBTypebotV4() {
   if (!fs.existsSync(DATABASE_FILE_TYPEBOT_V4)) {
     const db = {};
@@ -791,7 +843,7 @@ async function initializeDBTypebotV4() {
           const dataAgendamento = new Date(agendamentoConfig.dataAgendamento);
           if (dataAgendamento > new Date()) {
             // Chama scheduleAction diretamente para cada agendamento
-            scheduleAction(dataAgendamento, agendamentoConfig.url_registro, agendamentoConfig.name, whatsappNumber, agendamentoConfig.msg);
+            scheduleAction(dataAgendamento, agendamentoConfig.url_registro, agendamentoConfig.name, whatsappNumber, agendamentoConfig.messageId, agendamentoConfig.instanceName, agendamentoConfig.apiKeyEVO);
           }
         });
       }

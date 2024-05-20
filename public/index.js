@@ -28,21 +28,22 @@ mainContent.addEventListener('click', function(event) {
                 
                     // Conteúdo do modal
                     const modalContent = `
-                    <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
-                        <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                            <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
-                            <h2 style="color: white;">Adicionar Fluxo</h2>
-                            <label for="fluxoUrl" style="color: white;">URL do Fluxo:</label>
-                            <input type="text" id="fluxoUrl" placeholder="URL do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                            <label for="fluxoNome" style="color: white;">Nome do Fluxo:</label>
-                            <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                            <label for="fluxoGatilho" style="color: white;">Gatilho do Fluxo:</label>
-                            <input type="text" id="fluxoGatilho" placeholder="Gatilho do seu Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                            <button id="confirmarAdicao" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Adição</button>
-                        </div>
-                        <div id="response" style="margin-top: 20px;"></div>
-                    </div>
-                `;
+    <div id="addFluxoModalBackdrop">
+        <div id="addFluxoModal">
+            <div id="closeModal">&times;</div>
+            <h2>Adicionar Fluxo</h2>
+            <label for="fluxoUrl">URL do Fluxo:</label>
+            <input type="text" id="fluxoUrl" placeholder="URL do seu Fluxo">
+            <label for="fluxoNome">Nome do Fluxo:</label>
+            <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo">
+            <label for="fluxoGatilho">Gatilho do Fluxo:</label>
+            <input type="text" id="fluxoGatilho" placeholder="Gatilho do seu Fluxo">
+            <button id="confirmarAdicao">Confirmar Adição</button>
+        </div>
+        <div id="response"></div>
+    </div>
+`;
+
                 
                     // Insere o modal no DOM
                     document.body.insertAdjacentHTML('beforeend', modalContent);
@@ -83,19 +84,20 @@ mainContent.addEventListener('click', function(event) {
     
         // Conteúdo do modal
         const modalContent = `
-        <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
-            <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
-                <h2 style="color: white;">Adicionar Resposta Rápida</h2>                
-                <label for="fluxoNome" style="color: white;">Nome do Fluxo:</label>
-                <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo que será Disparado" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <label for="fluxoGatilho" style="color: white;">Frase de Disparo:</label>
-                <input type="text" id="fluxoGatilho" placeholder="Frase que irá disparar o Fluxo" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <button id="confirmarAdicaoRapida" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Adição</button>
+        <div id="addFluxoModalBackdrop">
+            <div id="addFluxoModal">
+                <div id="closeModal">&times;</div>
+                <h2>Adicionar Resposta Rápida</h2>
+                <label for="fluxoNome">Nome do Fluxo:</label>
+                <input type="text" id="fluxoNome" placeholder="Nome do seu Fluxo que será Disparado">
+                <label for="fluxoGatilho">Frase de Disparo:</label>
+                <input type="text" id="fluxoGatilho" placeholder="Frase que irá disparar o Fluxo">
+                <button id="confirmarAdicaoRapida">Confirmar Adição</button>
             </div>
-            <div id="response" style="margin-top: 20px;"></div>
+            <div id="response"></div>
         </div>
     `;
+    
     
         // Insere o modal no DOM
         document.body.insertAdjacentHTML('beforeend', modalContent);
@@ -144,23 +146,22 @@ mainContent.addEventListener('click', function(event) {
         const existingModal = document.getElementById('addFluxoModalBackdrop');
         if (existingModal) existingModal.remove();
     
-        // Conteúdo do modal
         const modalContent = `
-        <div id="addFluxoModalBackdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;">
-            <div id="addFluxoModal" style="background-color: #222; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <div id="closeModal" style="float: right; cursor: pointer; color: white;">&times;</div>
-                <h2 style="color: white;">Adicionar Remarketing</h2>
-                <label for="fluxoUrl" style="color: white;">URL do Fluxo de Remarketing :</label>
-                <input type="text" id="fluxoUrl" placeholder="URL do seu Remarketing" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <label for="fluxoNome" style="color: white;">Nome do Fluxo Principal:</label>
-                <input type="text" id="fluxoNome" placeholder="Nome do Fluxo que o Remarketing está atrelado" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <label for="fluxoGatilho" style="color: white;">Tempo em Dias:</label>
-                <input type="text" id="fluxoGatilho" placeholder="Dias para o Disparo do Remarketing" style="width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #555; border-radius: 4px; background-color: #222; color: white;"><br>
-                <button id="confirmarAdicaoRmkt" style="margin-top: 10px; width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Confirmar Remarketing</button>
-            </div>
-            <div id="response" style="margin-top: 20px;"></div>
+    <div id="addFluxoModalBackdrop">
+        <div id="addFluxoModal">
+            <div id="closeModal">&times;</div>
+            <h2>Adicionar Remarketing</h2>
+            <label for="fluxoUrl">URL do Fluxo de Remarketing :</label>
+            <input type="text" id="fluxoUrl" placeholder="URL do seu Remarketing">
+            <label for="fluxoNome">Nome do Fluxo Principal:</label>
+            <input type="text" id="fluxoNome" placeholder="Nome do Fluxo que o Remarketing está atrelado">
+            <label for="fluxoGatilho">Tempo em Dias:</label>
+            <input type="text" id="fluxoGatilho" placeholder="Dias para o Disparo do Remarketing">
+            <button id="confirmarAdicaoRmkt">Confirmar Remarketing</button>
         </div>
-    `;
+        <div id="response"></div>
+    </div>
+`;
     
         // Insere o modal no DOM
         document.body.insertAdjacentHTML('beforeend', modalContent);

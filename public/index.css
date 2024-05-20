@@ -619,3 +619,99 @@ body.dark #massMessageDispatch label {
 .input-group-inline input[type="number"] {
     width: 95%;
 }
+
+#addFluxoModalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+#addFluxoModal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    max-width: 90%;
+}
+
+body.dark #addFluxoModal {
+    background-color: #333;
+}
+
+#addFluxoModal h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+body.dark #addFluxoModal h2 {
+    color: white;
+}
+
+#addFluxoModal label {
+    color: #333;
+    display: block;
+    margin-top: 10px;
+}
+
+body.dark #addFluxoModal label {
+    color: white;
+}
+
+#addFluxoModal input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+body.dark #addFluxoModal input[type="text"] {
+    background-color: #444;
+    border: 1px solid #555;
+    color: white;
+}
+
+#addFluxoModal button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#addFluxoModal button:hover {
+    background-color: #388e3c;
+    transform: scale(1.05);
+}
+
+#closeModal {
+    float: right;
+    cursor: pointer;
+    color: #333;
+    font-size: 24px;
+}
+
+body.dark #closeModal {
+    color: white;
+}
+
+#response {
+    margin-top: 20px;
+}

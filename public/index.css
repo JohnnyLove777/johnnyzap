@@ -1,24 +1,34 @@
-/* Corpo da página */
-body {
+/* Tema Claro */
+body.light {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #e0e0e0; /* Fundo mais suave */
     color: #333;
+}
+
+/* Tema Escuro */
+body.dark {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212; /* Fundo menos agressivo */
+    color: #e0e0e0;
 }
 
 /* Cabeçalho */
 #header {
     width: 100%;
-    background-color: #fff;
-    color: #333;
+    background-color: inherit;
+    color: inherit;
     text-align: center;
     padding: 18px 15px;
     position: fixed;
     top: 0;
     z-index: 2;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 /* Barra lateral */
@@ -29,7 +39,7 @@ body {
     z-index: 1;
     top: 60px;
     left: 0;
-    background-color: #fff;
+    background-color: inherit;
     overflow-x: hidden;
     padding-top: 20px;
     border-right: 1px solid #ddd;
@@ -41,14 +51,19 @@ body {
     padding: 15px 20px;
     text-decoration: none;
     font-size: 18px;
-    color: #333;
+    color: inherit;
     display: block;
     transition: background-color 0.3s, color 0.3s;
 }
 
 #sidebar a:hover {
-    background-color: #f0f0f0;
-    color: #000;
+    background-color: #c8e6c9; /* Verde claro no hover */
+    color: #1b5e20;
+}
+
+body.dark #sidebar a:hover {
+    background-color: #2e7d32;
+    color: #c8e6c9;
 }
 
 /* Conteúdo principal */
@@ -62,15 +77,18 @@ body {
 /* Títulos no conteúdo principal */
 #main-content h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: inherit;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 /* Rótulos no conteúdo principal */
 #main-content label {
     display: block;
     margin-top: 20px;
-    color: #333;
+    color: inherit;
     text-align: center;
+    font-size: 16px;
 }
 
 /* Campos de entrada de texto */
@@ -85,13 +103,23 @@ body {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+body.dark #main-content input[type="text"] {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e0e0e0;
+}
+
 /* Texto pequeno no conteúdo principal */
 #main-content small {
     display: block;
     margin-top: 5px;
-    color: #666;
+    color: #777;
     font-size: 12px;
     text-align: center;
+}
+
+body.dark #main-content small {
+    color: #aaa;
 }
 
 /* Botões */
@@ -103,12 +131,12 @@ button#registerTypeZap {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
     font-size: 18px;
+    font-weight: bold;
 }
 
 button#registerTypeZap:hover {
-    background-color: #45a049;
+    background-color: #388e3c;
     transform: scale(1.05);
 }
 
@@ -118,16 +146,29 @@ button#registerTypeZap:hover {
     color: #777;
 }
 
+body.dark .fas {
+    color: #aaa;
+}
+
+.deleteFluxo i {
+    cursor: pointer;
+    color: #e53935; /* Cor vermelha para o ícone da lixeira */
+}
+
+body.dark .deleteFluxo i {
+    color: #ef9a9a; /* Vermelho mais claro no tema escuro */
+}
+
 /* Wrapper de Fluxos */
 #fluxosWrapper {
-    color: #333;
+    color: inherit;
     text-align: center;
     margin-top: 20px;
 }
 
 /* Lista de Fluxos */
 #fluxosList {
-    background-color: #fff;
+    background-color: inherit;
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -144,20 +185,24 @@ button#registerTypeZap:hover {
     border-bottom: 1px solid #ddd;
 }
 
+body.dark #fluxosList th, body.dark #fluxosList td {
+    border-bottom: 1px solid #555;
+}
+
 #fluxosList tr:hover {
-    background-color: #f0f0f0;
+    background-color: #c8e6c9;
+}
+
+body.dark #fluxosList tr:hover {
+    background-color: #2e7d32;
 }
 
 #fluxosList th {
     position: sticky;
     top: 0;
-    background-color: #007bff;
+    background-color: #4CAF50;
     color: white;
-    border-bottom: 3px solid #0056b3;
-}
-
-.deleteFluxo i {
-    cursor: pointer;
+    border-bottom: 3px solid #388e3c;
 }
 
 /* Botões no Wrapper de Fluxos */
@@ -169,15 +214,16 @@ button#registerTypeZap:hover {
     cursor: pointer;
     transition: background-color 0.3s;
     font-size: 16px;
+    font-weight: bold;
 }
 
 #atualizarLista, #adicionarFluxo, #atualizarListaRapida, #adicionarRespostaRapida, #atualizarGrupo, #atualizarListaRmkt, #adicionarRmkt {
-    background-color: #007bff;
+    background-color: #4CAF50;
     color: white;
 }
 
 #atualizarLista:hover, #adicionarFluxo:hover, #atualizarListaRapida:hover, #adicionarRespostaRapida:hover, #atualizarGrupo:hover, #atualizarListaRmkt:hover, #adicionarRmkt:hover {
-    background-color: #0056b3;
+    background-color: #388e3c;
 }
 
 /* Entrada de Texto */
@@ -190,6 +236,12 @@ input[type="text"] {
     background-color: #fff;
     color: #333;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+body.dark input[type="text"] {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e0e0e0;
 }
 
 /* Modal de Adicionar Fluxo */
@@ -214,6 +266,10 @@ input[type="text"] {
     width: 500px;
 }
 
+body.dark #addFluxoModal {
+    background-color: #333;
+}
+
 #addFluxoModal input[type="text"] {
     padding: 10px;
     margin: 10px 0;
@@ -224,28 +280,40 @@ input[type="text"] {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+body.dark #addFluxoModal input[type="text"] {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e0e0e0;
+}
+
 #addFluxoModal button {
     padding: 10px 20px;
     margin-top: 20px;
-    background-color: #007bff;
+    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     width: 100%;
     transition: background-color 0.3s, transform 0.3s;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 #addFluxoModal button:hover {
-    background-color: #0056b3;
+    background-color: #388e3c;
     transform: scale(1.05);
 }
 
 #closeModal {
     float: right;
     cursor: pointer;
-    color: #333;
+    color: inherit;
     font-size: 24px;
+}
+
+body.dark #closeModal {
+    color: white;
 }
 
 /* Carregar Leads */
@@ -259,9 +327,18 @@ input[type="text"] {
     text-align: center;
 }
 
+body.dark #carregarLeads {
+    background-color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 #carregarLeads h2 {
     color: #333;
     margin-bottom: 20px;
+}
+
+body.dark #carregarLeads h2 {
+    color: white;
 }
 
 #fileInput, #uploadButton {
@@ -278,6 +355,12 @@ input[type="text"] {
     color: #333;
 }
 
+body.dark #fileInput {
+    border: 1px solid #555;
+    background-color: #333;
+    color: #e0e0e0;
+}
+
 #uploadButton {
     background-color: #4CAF50;
     color: white;
@@ -289,7 +372,7 @@ input[type="text"] {
 }
 
 #uploadButton:hover {
-    background-color: #45a049;
+    background-color: #388e3c;
     transform: scale(1.05);
 }
 
@@ -323,7 +406,7 @@ input[type="text"] {
 }
 
 .file-upload-button {
-    background-color: #007bff;
+    background-color: #4CAF50;
 }
 
 .file-upload-text {
@@ -331,6 +414,10 @@ input[type="text"] {
     margin-top: 5px;
     font-size: 14px;
     color: #333;
+}
+
+body.dark .file-upload-text {
+    color: #e0e0e0;
 }
 
 /* Carregar Arquivo de Mídia */
@@ -344,9 +431,18 @@ input[type="text"] {
     text-align: center;
 }
 
+body.dark #carregarArquivoMidia {
+    background-color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 #carregarArquivoMidia h2 {
     color: #333;
     margin-bottom: 20px;
+}
+
+body.dark #carregarArquivoMidia h2 {
+    color: white;
 }
 
 .file-upload-wrapper {
@@ -379,11 +475,11 @@ input[type="text"] {
 }
 
 .file-upload-button {
-    background-color: #007bff;
+    background-color: #4CAF50;
 }
 
 #uploadButtonMidia {
-    background-color: #4CAF50;
+    background-color: #388e3c;
 }
 
 .file-upload-text {
@@ -393,9 +489,13 @@ input[type="text"] {
     color: #333;
 }
 
+body.dark .file-upload-text {
+    color: #e0e0e0;
+}
+
 /* Estilização de hover para botões */
 .file-upload-button:hover, #uploadButtonMidia:hover {
-    background-color: #45a049;
+    background-color: #2e7d32;
     transform: scale(1.05);
 }
 
@@ -407,6 +507,11 @@ input[type="text"] {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.dark #massMessageDispatch {
+    background-color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .input-group {
@@ -429,6 +534,10 @@ input[type="text"] {
     color: #333;
 }
 
+body.dark .input-group label {
+    color: #e0e0e0;
+}
+
 .buttons-group {
     margin-top: 20px;
     text-align: center;
@@ -442,17 +551,19 @@ input[type="text"] {
 }
 
 #iniciarCampanha, #pararCampanha {
-    background-color: #007bff;
+    background-color: #4CAF50;
     color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 #iniciarCampanha:hover, #pararCampanha:hover {
-    background-color: #0056b3;
+    background-color: #388e3c;
     transform: scale(1.05);
 }
 
@@ -467,12 +578,22 @@ select, input[type="number"] {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+body.dark select, body.dark input[type="number"] {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #e0e0e0;
+}
+
 #massMessageDispatch input[type="number"], #massMessageDispatch select {
     width: 95%;
 }
 
 #massMessageDispatch label {
     color: #333;
+}
+
+body.dark #massMessageDispatch label {
+    color: #e0e0e0;
 }
 
 .input-group-inline {

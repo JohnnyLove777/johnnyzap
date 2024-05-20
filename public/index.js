@@ -390,7 +390,7 @@ mainContent.addEventListener('click', function(event) {
                 <td style="padding: 8px;">${fluxo.gatilho}</td>
                 <td style="text-align: center; padding: 8px;">
                     <button class="deleteFluxo" data-fluxoNome="${fluxo.name}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
+                        <i class="fas fa-trash" style="color: black;"></i>
                     </button>
                 </td>
             </tr>
@@ -432,7 +432,7 @@ mainContent.addEventListener('click', function(event) {
                 <td style="padding: 8px;">${fluxo.gatilho}</td>
                 <td style="text-align: center; padding: 8px;">
                     <button class="deleteFluxoRapida" data-fluxoNome="${fluxo.name}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
+                        <i class="fas fa-trash" style="color: black;"></i>
                     </button>
                 </td>
             </tr>
@@ -474,7 +474,7 @@ mainContent.addEventListener('click', function(event) {
                 <td style="padding: 8px;">${fluxo.disparo}</td>
                 <td style="text-align: center; padding: 8px;">
                     <button class="deleteFluxoRmkt" data-fluxoNome="${fluxo.url_registro}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
+                        <i class="fas fa-trash" style="color: black;"></i>
                     </button>
                 </td>
             </tr>
@@ -515,7 +515,7 @@ mainContent.addEventListener('click', function(event) {
                 <td style="padding: 8px;">${fluxo.name}</td>                
                 <td style="text-align: center; padding: 8px;">
                     <button class="deleteFluxoGrupo" data-fluxoNome="${fluxo.name}" style="border: none; background-color: transparent; cursor: pointer;">
-                        <i class="fas fa-trash" style="color: white;"></i>
+                        <i class="fas fa-trash" style="color: black;"></i>
                     </button>
                 </td>
             </tr>

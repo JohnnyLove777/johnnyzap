@@ -24,8 +24,9 @@ const apiKeyEVO = 'f594jqci37r72wsr7e2czj';*/
 
 const DATABASE_FILE_TYPE = 'typebotDB.json';
 const DATABASE_FILE_TYPEBOT_V2 = 'typebotDBV2.json';
+const DATABASE_FILE_TYPEBOT_V3 = 'typebotDBV3.json';
 
-const db_length = 600;
+const db_length = 1200;
 
 console.log("Bem-vindo ao JohnnyZap Inteligênte 1.5 - A Integração mais completa Typebot + Whatsapp + OpenAI e ElevenLabs");
 
@@ -710,11 +711,88 @@ async function processMessageV2(messageBody, datafrom, dataid, instanceName, api
                   // Se encontrou o registro, executa a adição da sessão
                   //deleteObject(msgfrom);                  
                   await createSessionJohnny(datafrom, dataid, mainTypebotConfig.url_registro, mainTypebotConfig.name, instanceName, apiKeyEVO);
-                  //await scheduleRemarketing(mainTypebotConfig.name, msgfrom, msg);
+                  await scheduleRemarketing(mainTypebotConfig.name, datafrom, dataid, instanceName, apiKeyEVO);
                   break; // Sai do loop após encontrar o gatilho correspondente
               }
           }
       }
+  }
+}
+
+async function scheduleRemarketing(name, datafrom, messageId, instanceName, apiKeyEVO) {
+  const remarketingConfigs = db.readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3);
+  for (const url in remarketingConfigs) {
+      if (remarketingConfigs.hasOwnProperty(url)) {
+          const config = remarketingConfigs[url];
+          if (config.name === name) {
+              const diasParaAdicionar = parseInt(config.disparo, 10);
+              if (!isNaN(diasParaAdicionar)) {
+                  const dataFutura = new Date();
+                  dataFutura.setDate(dataFutura.getDate() + diasParaAdicionar); // Adiciona dias
+
+                  // Agende a ação de remarketing usando dataFutura
+                  scheduleAction(dataFutura, url, name, datafrom, messageId, instanceName, apiKeyEVO);
+
+                  // Adicione o agendamento ao banco de dados V4
+                  const agendamentoConfig = {
+                      url_registro: url,
+                      dataAgendamento: dataFutura
+                  };
+                  db.addToDBTypebotV4(msgfrom, agendamentoConfig);
+
+                  console.log(`Agendado para: ${dataFutura.toISOString()} - URL: ${url}`);
+              }
+          }
+      }
+  }
+}
+
+function scheduleAction(dataFutura, url, name, datafrom, messageId, instanceName, apiKeyEVO) {
+  const agora = new Date();
+  const delay = dataFutura.getTime() - agora.getTime(); // Calcula o tempo de espera em milissegundos
+
+  if (delay <= 0) {
+      console.log("A data de disparo já passou. Executando agora.");
+      if(!db.readOptout(datafrom)){
+      db.deleteObject(datafrom);
+      processMessageRMKT(datafrom, messageId, url, name, instanceName, apiKeyEVO);
+      db.removeFromDBTypebotV4withNumberAndURL(datafrom, url);
+      }
+  } else {
+      console.log(`Agendando ação de remarketing para ${dataFutura} (URL: ${url})`);
+      
+      // Agendar a ação
+      setTimeout(() => {
+          if(!db.readOptout(datafrom)){
+          db.deleteObject(datafrom);          
+          processMessageRMKT(datafrom, messageId, url, name, instanceName, apiKeyEVO);
+          db.removeFromDBTypebotV4withNumberAndURL(datafrom, url);
+          }
+      }, delay);
+
+      // Registrar no banco de dados V4
+      const agendamentoConfig = {
+          url_registro: url,
+          dataAgendamento: dataFutura,
+          name: name
+      };
+      
+      console.log(`Agendamento registrado para: ${datafrom} - URL: ${url} - Data: ${dataFutura}`);
+  }
+}
+
+async function processMessageRMKT(datafrom, messageId, url, name, instanceName, apiKeyEVO) {
+  const typebotConfigsV3 = db.readJSONFileTypebotV3(DATABASE_FILE_TYPEBOT_V3); // Lê os dados do banco de dados V3
+
+  // Busca a configuração correspondente à URL fornecida
+  const typebotConfigV3 = typebotConfigsV3[url];
+
+  if (typebotConfigV3) {
+      // Se encontrou o registro, executa a adição da sessão
+      db.deleteObject(datafrom);
+      await createSessionJohnny(datafrom, messageId, url, name, instanceName, apiKeyEVO);
+  } else {
+      console.log(`Nenhuma configuração encontrada para a URL: ${url}`);
   }
 }
 
@@ -741,7 +819,8 @@ app.post('/webhook/messages-upsert', async (req, res) => {
       //console.log(`fromMe: ${fromMe}`);
   
       if (fromMe) {
-        await processMessageV2(messageBody, remoteJid, messageId, instanceName, apiKeyEVO);
+        // Resposta Rápida
+        await processMessageV2(messageBody, remoteJid, messageId, instanceName, apiKeyEVO);        
       } else if (!fromMe) {
            
         const typebotKey = await db.readFluxo(remoteJid);
@@ -757,7 +836,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                       if ((typebotConfig.gatilho === messageBody) || (typebotConfig.gatilho === "null")) {
                           // Inicia a sessão com o Typebot correspondente
                           await createSessionJohnny(remoteJid, messageId, typebotConfig.url_registro, typebotConfig.name, instanceName, apiKeyEVO);
-                          //await scheduleRemarketing(typebotConfig.name, msg.from, msg);
+                          await scheduleRemarketing(typebotConfig.name, remoteJid, messageId, instanceName, apiKeyEVO);
                           break; // Sai do loop após encontrar o gatilho correspondente
                       }
                   }

@@ -657,6 +657,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
           if (formattedText.startsWith('!arquivo')) {
             const partes = formattedText.split(' ');  
             const linkDocumento = partes[1];
+            const nomeArquivo = partes[2];
             johnny.EnviarDocumento(datafrom, linkDocumento, nomeArquivo, 2000, apiKeyEVO, instanceName);
           }
           if (formattedText.startsWith('!reaction')) {
@@ -681,8 +682,8 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             const enderecoMatch = restanteTexto.match(regexNome);
             const endereco = enderecoMatch ? enderecoMatch[1] : '';
         
-            johnny.EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
-          }                          
+            johnny.EnviarLocalizacao(datafrom, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
+          }                             
           if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
             johnny.EnviarTexto(datafrom, formattedText, 2000, apiKeyEVO, instanceName);  
             //db.updateDelay(datafrom, null);          
@@ -989,12 +990,13 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                       if (formattedText.startsWith('!arquivo')) {
                         const partes = formattedText.split(' ');  
                         const linkDocumento = partes[1];
-                        johnny.EnviarDocumento(datafrom, linkDocumento, nomeArquivo, 2000, apiKeyEVO, instanceName);
+                        const nomeArquivo = partes[2];
+                        johnny.EnviarDocumento(remoteJid, linkDocumento, nomeArquivo, 2000, apiKeyEVO, instanceName);
                       }
                       if (formattedText.startsWith('!reaction')) {
                         const partes = formattedText.split(' ');  
                         const emoji = partes[1];
-                        johnny.EnviarReacao(datafrom, dataid, emoji, apiKeyEVO, instanceName);
+                        johnny.EnviarReacao(remoteJid, messageId, emoji, apiKeyEVO, instanceName);
                       }
                       if (formattedText.startsWith('!local')) {
                         const partes = formattedText.split(' ');            
@@ -1013,7 +1015,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         const enderecoMatch = restanteTexto.match(regexNome);
                         const endereco = enderecoMatch ? enderecoMatch[1] : '';
                     
-                        johnny.EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
+                        johnny.EnviarLocalizacao(remoteJid, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
                       }                          
                       if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
                         johnny.EnviarTexto(remoteJid, formattedText, 2000, apiKeyEVO, instanceName);  

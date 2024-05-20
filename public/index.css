@@ -19,7 +19,7 @@ body.dark {
 /* Cabeçalho */
 #header {
     width: 100%;
-    background-color: inherit;
+    background-color: #a5d6a7; /* Verde claro */
     color: inherit;
     text-align: center;
     padding: 18px 15px;
@@ -29,6 +29,10 @@ body.dark {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     font-size: 24px;
     font-weight: bold;
+}
+
+body.dark #header {
+    background-color: #2e7d32; /* Verde escuro para o tema escuro */
 }
 
 /* Barra lateral */

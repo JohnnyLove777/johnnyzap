@@ -752,10 +752,17 @@ async function scheduleRemarketing(name, datafrom, messageId, instanceName, apiK
       if (remarketingConfigs.hasOwnProperty(url)) {
           const config = remarketingConfigs[url];
           if (config.name === name) {
-              const diasParaAdicionar = parseInt(config.disparo, 10);
+              const diasParaAdicionar = parseFloat(config.disparo);
               if (!isNaN(diasParaAdicionar)) {
                   const dataFutura = new Date();
-                  dataFutura.setDate(dataFutura.getDate() + diasParaAdicionar); // Adiciona dias
+
+                  // Converte diasParaAdicionar para horas e minutos
+                  const horasParaAdicionar = Math.floor(diasParaAdicionar * 24);
+                  const minutosParaAdicionar = Math.floor((diasParaAdicionar * 24 * 60) % 60);
+
+                  // Adiciona horas e minutos à data atual
+                  dataFutura.setHours(dataFutura.getHours() + horasParaAdicionar);
+                  dataFutura.setMinutes(dataFutura.getMinutes() + minutosParaAdicionar);
 
                   // Agende a ação de remarketing usando dataFutura
                   scheduleAction(dataFutura, url, name, datafrom, messageId, instanceName, apiKeyEVO);

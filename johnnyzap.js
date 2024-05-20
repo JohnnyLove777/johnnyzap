@@ -709,7 +709,6 @@ async function processMessageV2(messageBody, datafrom, dataid, instanceName, api
 
               if (mainTypebotConfig) {
                   // Se encontrou o registro, executa a adição da sessão
-                  //deleteObject(msgfrom);                  
                   await createSessionJohnny(datafrom, dataid, mainTypebotConfig.url_registro, mainTypebotConfig.name, instanceName, apiKeyEVO);
                   await scheduleRemarketing(mainTypebotConfig.name, datafrom, dataid, instanceName, apiKeyEVO);
                   break; // Sai do loop após encontrar o gatilho correspondente
@@ -738,7 +737,7 @@ async function scheduleRemarketing(name, datafrom, messageId, instanceName, apiK
                       url_registro: url,
                       dataAgendamento: dataFutura
                   };
-                  db.addToDBTypebotV4(msgfrom, agendamentoConfig);
+                  db.addToDBTypebotV4(datafrom, agendamentoConfig);
 
                   console.log(`Agendado para: ${dataFutura.toISOString()} - URL: ${url}`);
               }

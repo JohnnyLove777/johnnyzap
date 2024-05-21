@@ -176,7 +176,7 @@ body.dark .deleteFluxo i {
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-height: 500px; /* Adicionado para aumentar a altura máxima */
+    max-height: 1000px; /* Adicionado para aumentar a altura máxima */
     overflow-y: auto; /* Permitir rolagem quando o conteúdo excede a altura máxima */
 }
 

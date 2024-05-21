@@ -324,7 +324,7 @@ async function sintetizarFalaOpenAI(texto, nomeArquivo, voice, instanceName) {
 
     // Configura os cabeçalhos da solicitação
     const headers = {
-      Authorization: `Bearer ${await db.readInstance(instanceName).openai}`,
+      Authorization: `Bearer ${await db.readInstance(instanceName).openaikey}`,
       'Content-Type': 'application/json',
     };
 

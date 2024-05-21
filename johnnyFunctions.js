@@ -537,7 +537,7 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
       }
     }
     if (db.readNextImage(numeroId) === true && messageData.message.imageMessage) {
-      const imageFilePath = `./imagemliquida/${numeroId.split('@s.whatsapp.net')[0]}.jpg`;
+      const imageFilePath = `./imagemliquida/${numeroId.split('@s.whatsapp.net')[0]}.png`;
   
       // Verifica se o arquivo já existe e, se sim, o remove
       if (fs.existsSync(imageFilePath)) {
@@ -552,7 +552,8 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
         try {
           if (fs.existsSync(imageFilePath)) {
             // Codifica a imagem em base64
-            const base64Image = fs.readFileSync(imageFilePath, { encoding: 'base64' });          
+            const base64Image = fs.readFileSync(imageFilePath, { encoding: 'base64' });
+            await deleteFile(imageFilePath);          
             // Obtém a resposta do Vision e retorna
             return `Imagem enviada pelo usuário: ${await runImage(await db.readPrompt(numeroId), base64Image, db.readInstance(instanceName).openaikey)}`;
           }

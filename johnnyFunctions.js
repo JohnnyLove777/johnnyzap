@@ -448,7 +448,7 @@ async function converterArquivoOGGparaMP3(caminhoArquivoEntrada, nomeArquivoSaid
   
 async function runImage(promptText, base64Image, userOpenAiKey) {
     try {
-        const openai = initializeClient(userOpenAiKey);
+        const openai = initializeClientOpenai(userOpenAiKey);
         const response = await openai.chat.completions.create({
             model: 'gpt-4o',
             max_tokens: 4096,

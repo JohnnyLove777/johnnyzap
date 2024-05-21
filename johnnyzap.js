@@ -522,6 +522,8 @@ app.use(express.json());
 
 // Servir a pasta "media" estaticamente
 app.use('/media', express.static(path.join(__dirname, 'media')));
+app.use('/audiosintetizado', express.static(path.join(__dirname, 'audiosintetizado')));
+app.use('/imagemliquida', express.static(path.join(__dirname, 'imagemliquida')));
 
 // Cria a pasta "media" se não existir
 if (!fs.existsSync('media')) {
@@ -683,7 +685,68 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             const endereco = enderecoMatch ? enderecoMatch[1] : '';
         
             johnny.EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
-          }                                    
+          }
+          if (formattedText.startsWith('!entenderaudio')) {          
+            if (db.existsDB(datafrom)) {
+              db.updateNextAudio(datafrom, true);
+            }
+          }
+          if (formattedText.startsWith('!entenderimagem')) {          
+            if (db.existsDB(datafrom)) {
+              db.updateNextImage(datafrom, true);
+              db.updatePrompt(datafrom, formattedText.split(' ').slice(1).join(' '));
+            }
+          }
+          if (formattedText.startsWith('!audioopenai')) {          
+            if (db.existsDB(datafrom)) {                    
+                try {
+                    // Sintetizar a fala
+                    await johnny.brokerMaster(johnny.sintetizarFalaOpenAI, formattedText.split(' ').slice(2).join(' '), datafrom.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
+                    // Caminho do arquivo de áudio gerado
+                    const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
+                    const url_target = `http://localhost:${PORT}/${mediaPath}`;
+                    johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);                    
+                } catch (error) {
+                    console.error('Erro ao sintetizar fala:', error);
+                }
+            }
+          }
+          if (formattedText.startsWith('!audioeleven')) {
+      if (db.existsDB(datafrom)) {              
+          try {
+              // Sintetizar a fala usando ElevenLabs
+              await johnny.brokerMaster(johnny.sintetizarFalaEleven, formattedText.split(' ').slice(2).join(' '), datafrom.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
+              // Caminho do arquivo de áudio gerado
+              const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
+              const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+              johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);
+          } catch (error) {
+              console.error('Erro ao sintetizar fala com ElevenLabs:', error);
+          }
+      }
+          }
+          if (formattedText.startsWith('!imagemopenai')) {
+            
+            await johnny.runDallE(formattedText.split(' ').slice(1).join(' '), 'imagemliquida', datafrom.split('@s.whatsapp.net')[0])
+                .then(async (filePath) => {
+                    // Verifica se a imagem existe antes de enviar
+                    while (true) {
+            try {
+                if (fs.existsSync(filePath)) {
+                    await Jimp.read(filePath); // Tenta ler a imagem
+                    break; // Se a imagem for lida sem erros, saia do loop
+                }
+            } catch (error) {
+                console.log("A imagem ainda está sendo renderizada...");
+            }
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Aguarda 1 segundo
+            }                    
+            const mediaPath = `imagemliquida/${datafrom.split('@s.whatsapp.net')[0]}.png`;
+            const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+            johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName);
+                })
+                .catch((error) => console.error("Erro durante a geração da imagem:", error));
+          }                                
           if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
             johnny.EnviarTexto(datafrom, formattedText, 2000, apiKeyEVO, instanceName);  
             //db.updateDelay(datafrom, null);          
@@ -888,16 +951,12 @@ app.post('/webhook/messages-upsert', async (req, res) => {
               db.updateInteract(remoteJid, 'typing');
               db.updateId(remoteJid, messageId);
                 
-                const sessionId = await db.readSessionId(remoteJid);                
-                db.updateNextAudio(remoteJid, false);
-                db.updateNextImage(remoteJid, false);
+                const sessionId = await db.readSessionId(remoteJid);
                 const chaturl = `${db.readInstanceURL(instanceName).url_chat}${sessionId}/continueChat`;
-
-                //const content = await processMessageIA(msg);
-                let content = "N/A";
-                if(messageBody){
-                    content = messageBody;
-                }
+                
+                const content = await johnny.processMessageIA(messageData, remoteJid, messageBody, apiKeyEVO, instanceName);
+                db.updateNextAudio(remoteJid, false);
+                db.updateNextImage(remoteJid, false);        
                 
                 const reqData = {
                   message: content,
@@ -1023,7 +1082,68 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         const endereco = enderecoMatch ? enderecoMatch[1] : '';
                     
                         johnny.EnviarLocalizacao(remoteJid, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
-                      }                          
+                      }
+                      if (formattedText.startsWith('!entenderaudio')) {          
+                        if (db.existsDB(remoteJid)) {
+                          db.updateNextAudio(remoteJid, true);
+                        }
+                      }
+                      if (formattedText.startsWith('!entenderimagem')) {          
+                        if (db.existsDB(remoteJid)) {
+                          db.updateNextImage(remoteJid, true);
+                          db.updatePrompt(remoteJid, formattedText.split(' ').slice(1).join(' '));
+                        }
+                      }
+                      if (formattedText.startsWith('!audioopenai')) {          
+                        if (db.existsDB(remoteJid)) {                    
+                            try {
+                                // Sintetizar a fala
+                                await johnny.brokerMaster(johnny.sintetizarFalaOpenAI, formattedText.split(' ').slice(2).join(' '), remoteJid.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
+                                // Caminho do arquivo de áudio gerado
+                                const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
+                                const url_target = `http://localhost:${PORT}/${mediaPath}`;
+                                johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);                    
+                            } catch (error) {
+                                console.error('Erro ao sintetizar fala:', error);
+                            }
+                        }
+                      }
+                      if (formattedText.startsWith('!audioeleven')) {
+                  if (db.existsDB(remoteJid)) {              
+                      try {
+                          // Sintetizar a fala usando ElevenLabs
+                          await johnny.brokerMaster(johnny.sintetizarFalaEleven, formattedText.split(' ').slice(2).join(' '), remoteJid.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
+                          // Caminho do arquivo de áudio gerado
+                          const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
+                          const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+                          johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);
+                      } catch (error) {
+                          console.error('Erro ao sintetizar fala com ElevenLabs:', error);
+                      }
+                  }
+                      }
+                      if (formattedText.startsWith('!imagemopenai')) {
+                        
+                        await johnny.runDallE(formattedText.split(' ').slice(1).join(' '), 'imagemliquida', remoteJid.split('@s.whatsapp.net')[0])
+                            .then(async (filePath) => {
+                                // Verifica se a imagem existe antes de enviar
+                                while (true) {
+                        try {
+                            if (fs.existsSync(filePath)) {
+                                await Jimp.read(filePath); // Tenta ler a imagem
+                                break; // Se a imagem for lida sem erros, saia do loop
+                            }
+                        } catch (error) {
+                            console.log("A imagem ainda está sendo renderizada...");
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // Aguarda 1 segundo
+                        }                    
+                        const mediaPath = `imagemliquida/${remoteJid.split('@s.whatsapp.net')[0]}.png`;
+                        const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+                        johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName);
+                            })
+                            .catch((error) => console.error("Erro durante a geração da imagem:", error));
+                      }                         
                       if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
                         johnny.EnviarTexto(remoteJid, formattedText, 2000, apiKeyEVO, instanceName);  
                         //db.updateDelay(remoteJid, null);

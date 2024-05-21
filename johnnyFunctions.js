@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const mime = require('mime-types');
 
+const db = require('./databaseFunctions');
+
 const API_BASE_URL = 'http://localhost:8080';
 
 async function EnviarTexto(numeroId, mensagem, delay, apikey, instanceName) {
@@ -35,7 +37,7 @@ async function EnviarImagem(numeroId, linkImagem, legenda, delay, apikey, instan
     number: numeroId,
     options: {
       ...(delay !== null && { delay: delay }),
-      presence: 'composing'
+      presence: 'available'
     },
     mediaMessage: {
       mediatype: 'image',
@@ -62,7 +64,7 @@ async function EnviarVideo(numeroId, linkVideo, legenda, delay, apikey, instance
     number: numeroId,
     options: {
       ...(delay !== null && { delay: delay }),
-      presence: 'composing'
+      presence: 'available'
     },
     mediaMessage: {
       mediatype: 'video',
@@ -114,7 +116,7 @@ async function EnviarDocumento(numeroId, linkDocumento, nomeArquivo, delay, apik
     number: numeroId,
     options: {
       ...(delay !== null && { delay: delay }),
-      presence: 'composing'
+      presence: 'available'
     },
     mediaMessage: {
       mediatype: 'document',
@@ -189,7 +191,7 @@ async function EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 
   );
 }
 
-async function downloadAndSaveMedia(messageId, mimetype, fileName, apikey, instanceName, convertToMp4 = false) {
+async function downloadAndSaveMedia(messageId, mimetype, filePath, apikey, instanceName, convertToMp4 = false) {
   try {
     const data = JSON.stringify({
       message: {
@@ -221,10 +223,10 @@ async function downloadAndSaveMedia(messageId, mimetype, fileName, apikey, insta
     if (!base64Content) {
       throw new Error('base64 não encontrado na resposta da API');
     }
-    const extension = mime.extension(mimetype);
-    const filePath = path.join('media', `${fileName}.${extension}`);
-
+    //const extension = mime.extension(mimetype);
+    //const filePath = path.join('media', `${fileName}.${extension}`);
     // Decodificar o conteúdo Base64 e salvar no arquivo
+    
     const mediaBuffer = Buffer.from(base64Content, 'base64');
     fs.writeFileSync(filePath, mediaBuffer);
     console.log(`Mídia salva em: ${filePath}`);
@@ -293,7 +295,7 @@ async function runAudio(arquivo) {
   return transcript.text;  
 }
 
-async function sintetizarFalaOpenAI(texto, nomeArquivo, voice) {
+async function sintetizarFalaOpenAI(texto, nomeArquivo, voice, instanceName) {
   try {
     const requestData = {
       model: 'tts-1',
@@ -303,7 +305,7 @@ async function sintetizarFalaOpenAI(texto, nomeArquivo, voice) {
 
     // Configura os cabeçalhos da solicitação
     const headers = {
-      Authorization: `Bearer ${await readURL(0).openaikey}`,
+      Authorization: `Bearer ${await db.readInstance(instanceName).openai}`,
       'Content-Type': 'application/json',
     };
 
@@ -368,11 +370,19 @@ function handleError(err) {
   console.error('Erro na API:', err);
 }
 
+// Configs ElevenLabs
+const voice_SETTINGS = {  
+  similarity_boost: 0.75, 
+  stability: 0.5,       
+  style: 0,           
+  use_speaker_boost: true
+};
+
 // Ajuste da função sintetizarFalaEleven
-async function sintetizarFalaEleven(texto, nomeArquivo, voiceId) {
+async function sintetizarFalaEleven(texto, nomeArquivo, voiceId, instanceName) {
   try {
-    // Extrai a chave da API ElevenLabs
-    const elevenlabsKey = readURL(0).elevenlabskey;
+    // Extrai a chave da API ElevenLabs    
+    const elevenlabsKey = db.readInstance(instanceName).elevenlabskey;
 
     // Define o caminho do arquivo de saída no diretório audiosintetizado
     const outputPath = path.join('audiosintetizado', `${nomeArquivo}.ogg`);
@@ -455,31 +465,32 @@ function encodeImage(imagePath) {
     return Buffer.from(imageBuffer).toString('base64');
 }
   
-async function processMessageIA(msg) {
-  
-  if (msg.hasMedia) {
-    const attachmentData = await msg.downloadMedia();
-    if(readNextAudio(msg.from) === false && attachmentData.mimetype === 'audio/ogg; codecs=opus'){
-      return;
+async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, instanceName) {
+
+  if (!messageData.message.conversation) {
+    
+    if(readNextAudio(numeroId) === false && messageData.message.audioMessage){
+      return "N/A";
     }
-    if (readNextAudio(msg.from) === true && attachmentData.mimetype !== 'audio/ogg; codecs=opus' && !attachmentData.mimetype.startsWith('image/')){
+    if (readNextAudio(numeroId) === true && !messageData.message.audioMessage && !messageData.message.imageMessage){
       return "Mídia não detectada.";
     }
-    if (readNextAudio(msg.from) === true && attachmentData.mimetype === 'audio/ogg; codecs=opus'){
-      const audioFilePath = `./audiobruto/${msg.from.split('@c.us')[0]}.ogg`;
-  
+    if (readNextAudio(numeroId) === true && messageData.message.audioMessage){
+      const audioFilePath = `./audiobruto/${numeroId.split('@s.whatsapp.net')[0]}.ogg`;
+      
+      // Verifica se o arquivo já existe e, se sim, o remove
       if (fs.existsSync(audioFilePath)) {
         fs.unlinkSync(audioFilePath);
       }
-  
-      await writeFileAsync(audioFilePath, Buffer.from(attachmentData.data, 'base64'));
+
+      await downloadAndSaveMedia(messageData.key.id, messageData.message.audioMessage.mimetype, audioFilePath, apiKeyEVO, instanceName);
   
       while (true) {
         try {
           if (fs.existsSync(audioFilePath)) {
-            await converterArquivoOGGparaMP3(audioFilePath, `./audioliquido/${msg.from.split('@c.us')[0]}.mp3`);
+            await converterArquivoOGGparaMP3(audioFilePath, `./audioliquido/${numeroId.split('@s.whatsapp.net')[0]}.mp3`);
             fs.unlinkSync(audioFilePath);
-            return await brokerMaster(runAudio, `./audioliquido/${msg.from.split('@c.us')[0]}.mp3`);
+            return await brokerMaster(runAudio, `./audioliquido/${numeroId.split('@s.whatsapp.net')[0]}.mp3`);
           }
   
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -489,8 +500,8 @@ async function processMessageIA(msg) {
         }
       }
     }
-    if (readNextImage(msg.from) === true && attachmentData.mimetype.startsWith('image/')) {
-      const imageFilePath = `./imagemliquida/${msg.from.split('@c.us')[0]}.jpg`;
+    if (readNextImage(numeroId) === true && messageData.message.imageMessage) {
+      const imageFilePath = `./imagemliquida/${numeroId.split('@s.whatsapp.net')[0]}.jpg`;
   
       // Verifica se o arquivo já existe e, se sim, o remove
       if (fs.existsSync(imageFilePath)) {
@@ -498,16 +509,16 @@ async function processMessageIA(msg) {
       }
   
       // Salva a imagem recebida em um arquivo
-      await writeFileAsync(imageFilePath, Buffer.from(attachmentData.data, 'base64'));
+      await downloadAndSaveMedia(messageData.key.id, messageData.message.imageMessage.mimetype, imageFilePath, apiKeyEVO, instanceName);
   
       // Loop para garantir que a imagem foi salva antes de prosseguir
       while (true) {
         try {
           if (fs.existsSync(imageFilePath)) {
             // Codifica a imagem em base64
-            const base64Image = encodeImage(imageFilePath);          
+            const base64Image = fs.readFileSync(imageFilePath, { encoding: 'base64' });          
             // Obtém a resposta do Vision e retorna
-            return `Imagem enviada pelo usuário: ${await runImage(await readPrompt(msg.from), base64Image)}`;
+            return `Imagem enviada pelo usuário: ${await runImage(await readPrompt(numeroId), base64Image)}`;
           }
   
           // Aguarda um pouco antes de verificar novamente
@@ -518,12 +529,12 @@ async function processMessageIA(msg) {
         }
       }
     }  
-    if (readNextImage(msg.from) === false && attachmentData.mimetype.startsWith('image/')){
-      return;
+    if (readNextImage(numeroId) === false && messageData.message.imageMessage){
+      return "N/A";
     }
     } 
-    if (!msg.hasMedia) {
-    return msg.body;
+    if (messageData.message.conversation) {
+    return mensagem;
     }
 }
   

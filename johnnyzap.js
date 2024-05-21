@@ -7,6 +7,7 @@ const axios = require('axios');
 const Jimp = require('jimp');
 const WebSocket = require('ws');
 const http = require('http');
+require('dotenv').config();
 
 const johnny = require('./johnnyFunctions');
 const db = require('./databaseFunctions');
@@ -17,7 +18,7 @@ const DATABASE_FILE_TYPEBOT_V3 = 'typebotDBV3.json';
 
 const db_length = 1200;
 
-const IP_VPS = 'http://143.198.55.162';
+const IP_VPS = process.env.IP_VPS;
 
 console.log("Bem-vindo ao JohnnyZap Inteligênte 1.5 - A Integração mais completa Typebot + Whatsapp + OpenAI e ElevenLabs");
 

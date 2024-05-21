@@ -542,7 +542,7 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
             // Codifica a imagem em base64
             const base64Image = fs.readFileSync(imageFilePath, { encoding: 'base64' });          
             // Obtém a resposta do Vision e retorna
-            return `Imagem enviada pelo usuário: ${await runImage(await readPrompt(numeroId), base64Image, db.readInstance(instanceName).openaikey)}`;
+            return `Imagem enviada pelo usuário: ${await runImage(await db.readPrompt(numeroId), base64Image, db.readInstance(instanceName).openaikey)}`;
           }
   
           // Aguarda um pouco antes de verificar novamente

@@ -17,6 +17,8 @@ const DATABASE_FILE_TYPEBOT_V3 = 'typebotDBV3.json';
 
 const db_length = 1200;
 
+const IP_VPS = 'http://143.198.55.162';
+
 console.log("Bem-vindo ao JohnnyZap Inteligênte 1.5 - A Integração mais completa Typebot + Whatsapp + OpenAI e ElevenLabs");
 
 // Conectando ao daemon do PM2
@@ -693,7 +695,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
                     await johnny.brokerMaster(johnny.sintetizarFalaOpenAI, formattedText.split(' ').slice(2).join(' '), datafrom.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
                     // Caminho do arquivo de áudio gerado
                     const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
-                    const url_target = `http://localhost:${PORT}/${mediaPath}`;
+                    const url_target = `http://:${PORT}/${mediaPath}`;
                     johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);                    
                 } catch (error) {
                     console.error('Erro ao sintetizar fala:', error);
@@ -707,7 +709,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
               await johnny.brokerMaster(johnny.sintetizarFalaEleven, formattedText.split(' ').slice(2).join(' '), datafrom.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
               // Caminho do arquivo de áudio gerado
               const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
-              const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+              const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
               johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);
           } catch (error) {
               console.error('Erro ao sintetizar fala com ElevenLabs:', error);
@@ -731,7 +733,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             await new Promise(resolve => setTimeout(resolve, 1000)); // Aguarda 1 segundo
             }                    
             const mediaPath = `imagemliquida/${datafrom.split('@s.whatsapp.net')[0]}.png`;
-            const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+            const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
             johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName);
                 })
                 .catch((error) => console.error("Erro durante a geração da imagem:", error));
@@ -1090,7 +1092,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                                 await johnny.brokerMaster(johnny.sintetizarFalaOpenAI, formattedText.split(' ').slice(2).join(' '), remoteJid.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
                                 // Caminho do arquivo de áudio gerado
                                 const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
-                                const url_target = `http://localhost:${PORT}/${mediaPath}`;
+                                const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;
                                 johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);                    
                             } catch (error) {
                                 console.error('Erro ao sintetizar fala:', error);
@@ -1104,7 +1106,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                           await johnny.brokerMaster(johnny.sintetizarFalaEleven, formattedText.split(' ').slice(2).join(' '), remoteJid.split('@s.whatsapp.net')[0], formattedText.split(' ')[1], instanceName);
                           // Caminho do arquivo de áudio gerado
                           const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
-                          const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+                          const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
                           johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);
                       } catch (error) {
                           console.error('Erro ao sintetizar fala com ElevenLabs:', error);
@@ -1128,7 +1130,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         await new Promise(resolve => setTimeout(resolve, 1000)); // Aguarda 1 segundo
                         }                    
                         const mediaPath = `imagemliquida/${remoteJid.split('@s.whatsapp.net')[0]}.png`;
-                        const url_target = `http://localhost:${PORT}/${mediaPath}`;              
+                        const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
                         johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName);
                             })
                             .catch((error) => console.error("Erro durante a geração da imagem:", error));

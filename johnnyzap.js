@@ -697,7 +697,14 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
                     // Caminho do arquivo de áudio gerado
                     const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
                     const url_target = `http://:${PORT}/${mediaPath}`;
-                    johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);                    
+                    johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName)
+                    .then(() => {
+                      // Chame deleteFile após o sucesso de EnviarAudio
+                      return deleteFileAsync(mediaPath);
+                  })
+                  .catch(err => {
+                      console.error('Erro ao enviar o áudio:', err);
+                  });                    
                 } catch (error) {
                     console.error('Erro ao sintetizar fala:', error);
                 }
@@ -711,7 +718,14 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
               // Caminho do arquivo de áudio gerado
               const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
               const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
-              johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);
+              johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName)
+              .then(() => {
+                // Chame deleteFile após o sucesso de EnviarAudio
+                return deleteFileAsync(mediaPath);
+            })
+            .catch(err => {
+                console.error('Erro ao enviar o áudio:', err);
+            });
           } catch (error) {
               console.error('Erro ao sintetizar fala com ElevenLabs:', error);
           }
@@ -735,7 +749,14 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             }                    
             const mediaPath = `imagemliquida/${datafrom.split('@s.whatsapp.net')[0]}.png`;
             const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
-            johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName);
+            johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName)
+            .then(() => {
+              // Chame deleteFile após o sucesso de EnviarImagem
+              return deleteFileAsync(mediaPath);
+          })
+          .catch(err => {
+              console.error('Erro ao enviar o imagem:', err);
+          });
                 })
                 .catch((error) => console.error("Erro durante a geração da imagem:", error));
           }                                
@@ -1094,7 +1115,13 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                                 // Caminho do arquivo de áudio gerado
                                 const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
                                 const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;
-                                johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);                    
+                                johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName)
+                                .then(() => {
+                                  return deleteFileAsync(mediaPath);
+                              })
+                              .catch(err => {
+                                  console.error('Erro ao enviar o áudio:', err);
+                              });                   
                             } catch (error) {
                                 console.error('Erro ao sintetizar fala:', error);
                             }
@@ -1108,7 +1135,14 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                           // Caminho do arquivo de áudio gerado
                           const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
                           const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
-                          johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);
+                          johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName)
+                          .then(() => {
+                            // Chame deleteFile após o sucesso de EnviarAudio
+                            return deleteFileAsync(mediaPath);
+                        })
+                        .catch(err => {
+                            console.error('Erro ao enviar o áudio:', err);
+                        });
                       } catch (error) {
                           console.error('Erro ao sintetizar fala com ElevenLabs:', error);
                       }
@@ -1132,7 +1166,14 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         }                    
                         const mediaPath = `imagemliquida/${remoteJid.split('@s.whatsapp.net')[0]}.png`;
                         const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
-                        johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName);
+                        johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName)
+                        .then(() => {
+                          // Chame deleteFile após o sucesso de EnviarImagem
+                          return deleteFileAsync(mediaPath);
+                      })
+                      .catch(err => {
+                          console.error('Erro ao enviar a imagem:', err);
+                      });
                             })
                             .catch((error) => console.error("Erro durante a geração da imagem:", error));
                       }                         

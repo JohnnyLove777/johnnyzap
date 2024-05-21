@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const fss = require('fs').promises;
 const path = require('path');
 const fetch = require('node-fetch');
 const https = require('https');
@@ -261,6 +262,15 @@ function initializeClientOpenai(openaiKey) {
       throw new Error('Chave OpenAI é necessária');
   }
   return new OpenAI({ apiKey: openaiKey });
+}
+
+async function deleteFile(mediaPath) {
+  try {
+      await fss.unlink(mediaPath);
+      console.log(`Arquivo ${mediaPath} apagado com sucesso.`);
+  } catch (err) {
+      console.error(`Erro ao apagar o arquivo ${mediaPath}:`, err);
+  }
 }
 
 // Rodando imagem IA
@@ -601,6 +611,7 @@ module.exports = {
   EnviarDocumento,
   EnviarReacao,
   EnviarLocalizacao,
+  deleteFile,
   downloadAndSaveMedia,
   isFromMe,
   delay,

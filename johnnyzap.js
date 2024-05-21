@@ -691,7 +691,8 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             
             // Enviar cada conteúdo separadamente
             conteudos.forEach(conteudo => {
-                johnny.EnviarTexto(datafrom, conteudo.trim(), 2000, apiKeyEVO, instanceName);
+                johnny.EnviarTexto(datafrom, conteudo.trim(), 4000, apiKeyEVO, instanceName);
+                waitWithDelay("2");
             });
           }
           if (formattedText.startsWith('!entenderaudio')) {          
@@ -776,7 +777,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
                 })
                 .catch((error) => console.error("Erro durante a geração da imagem:", error));
           }                                
-          if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
+          if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!split')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
             johnny.EnviarTexto(datafrom, formattedText, 2000, apiKeyEVO, instanceName);  
             //db.updateDelay(datafrom, null);          
           }      
@@ -1125,7 +1126,8 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         
                         // Enviar cada conteúdo separadamente
                         conteudos.forEach(conteudo => {
-                            johnny.EnviarTexto(remoteJid, conteudo.trim(), 2000, apiKeyEVO, instanceName);
+                            johnny.EnviarTexto(remoteJid, conteudo.trim(), 4000, apiKeyEVO, instanceName);
+                            waitWithDelay("2");
                         });
                       }
                       if (formattedText.startsWith('!entenderaudio')) {          

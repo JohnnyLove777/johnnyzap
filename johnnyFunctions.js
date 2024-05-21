@@ -4,6 +4,9 @@ const path = require('path');
 const fetch = require('node-fetch');
 const https = require('https');
 const OpenAI = require('openai');
+const { spawn } = require('child_process');
+const { promisify } = require('util');
+const writeFileAsync = promisify(fs.writeFile);
 
 const db = require('./databaseFunctions');
 
@@ -218,7 +221,7 @@ async function downloadAndSaveMedia(messageId, mimetype, filePath, apikey, insta
     const response = await axios.request(config);
 
     // Verificar a resposta da API
-    console.log('Resposta da API:', response.data.mediatype);
+    console.log('Resposta da API:', response.data.mediaType);
 
     // Extrair dados da resposta
     const base64Content = response.data.base64;

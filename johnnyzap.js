@@ -454,7 +454,7 @@ wss.on('connection', function connection(ws) {
 });
 
 serverWeb.listen(3031, function() {
-    console.log('Servidor do JohnnyZap com o Dashboard em http://localhost:3031');
+    console.log(`Servidor do JohnnyZap com o Dashboard em ${IP_VPS}:3031`);
 });
 
 //Mecanismo para criar pasta

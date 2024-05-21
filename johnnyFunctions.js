@@ -7,10 +7,12 @@ const OpenAI = require('openai');
 const { spawn } = require('child_process');
 const { promisify } = require('util');
 const writeFileAsync = promisify(fs.writeFile);
+require('dotenv').config();
 
 const db = require('./databaseFunctions');
 
-const API_BASE_URL = 'http://localhost:8080';
+const IP_VPS = process.env.IP_VPS;
+const API_BASE_URL = `${IP_VPS}:8080`;
 
 async function EnviarTexto(numeroId, mensagem, delay, apikey, instanceName) {
   const textPostData = {

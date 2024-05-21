@@ -3,24 +3,13 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 const pm2 = require('pm2');
-const fsp = fs.promises; // Para operações assíncronas baseadas em promessas
 const axios = require('axios');
 const Jimp = require('jimp');
-const fetch = require('node-fetch');
 const WebSocket = require('ws');
-const socketIo = require('socket.io');
 const http = require('http');
-const https = require('https');
-const OpenAI = require('openai');
-const { spawn } = require('child_process');
-const { promisify } = require('util');
-const writeFileAsync = promisify(fs.writeFile);
 
 const johnny = require('./johnnyFunctions');
 const db = require('./databaseFunctions');
-
-/*const instanceName = 'JohnnyEVO';
-const apiKeyEVO = 'f594jqci37r72wsr7e2czj';*/
 
 const DATABASE_FILE_TYPE = 'typebotDB.json';
 const DATABASE_FILE_TYPEBOT_V2 = 'typebotDBV2.json';
@@ -727,7 +716,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
           }
           if (formattedText.startsWith('!imagemopenai')) {
             
-            await johnny.runDallE(formattedText.split(' ').slice(1).join(' '), 'imagemliquida', datafrom.split('@s.whatsapp.net')[0])
+            await johnny.runDallE(formattedText.split(' ').slice(1).join(' '), 'imagemliquida', datafrom.split('@s.whatsapp.net')[0], db.readInstance(instanceName).openaikey)
                 .then(async (filePath) => {
                     // Verifica se a imagem existe antes de enviar
                     while (true) {
@@ -1124,7 +1113,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                       }
                       if (formattedText.startsWith('!imagemopenai')) {
                         
-                        await johnny.runDallE(formattedText.split(' ').slice(1).join(' '), 'imagemliquida', remoteJid.split('@s.whatsapp.net')[0])
+                        await johnny.runDallE(formattedText.split(' ').slice(1).join(' '), 'imagemliquida', remoteJid.split('@s.whatsapp.net')[0], db.readInstance(instanceName).openaikey)
                             .then(async (filePath) => {
                                 // Verifica se a imagem existe antes de enviar
                                 while (true) {

@@ -1,7 +1,12 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types');
+const path = require('path');
+const fs = require('fs');
+const axios = require('axios');
+const fetch = require('node-fetch');
+const https = require('https');
+const OpenAI = require('openai');
 
 const db = require('./databaseFunctions');
 
@@ -216,7 +221,7 @@ async function downloadAndSaveMedia(messageId, mimetype, filePath, apikey, insta
     const response = await axios.request(config);
 
     // Verificar a resposta da API
-    console.log('Resposta da API:', response.data);
+    console.log('Resposta da API:', response.data.mediatype);
 
     // Extrair dados da resposta
     const base64Content = response.data.base64;
@@ -249,10 +254,18 @@ async function delay(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
+function initializeClientOpenai(openaiKey) {
+  if (!openaiKey) {
+      throw new Error('Chave OpenAI é necessária');
+  }
+  return new OpenAI({ apiKey: openaiKey });
+}
+
 // Rodando imagem IA
 
-async function runDallE(promptText, imagePath, imageName) {
+async function runDallE(promptText, imagePath, imageName, userOpenAiKey) {
   try {
+      const openai = initializeClientOpenai(userOpenAiKey);
       const genimage = await openai.images.generate({
           model: "dall-e-3",
           prompt: promptText,
@@ -262,7 +275,7 @@ async function runDallE(promptText, imagePath, imageName) {
       const imageUrl = genimage.data[0].url;
       const filePath = path.join(imagePath, `${imageName}.png`);
       await saveImage(imageUrl, filePath);
-      return filePath; // Retorna o caminho do arquivo da imagem salva
+      return filePath;
   } catch (error) {
       console.error('Erro ao gerar ou salvar a imagem:', error);
       throw error;
@@ -287,12 +300,18 @@ async function saveImage(imageUrl, filePath) {
 
 //Mecanismo para reconhecimento de audio e imagem
 
-async function runAudio(arquivo) {  
-  const transcript = await openai.audio.transcriptions.create({
-    model: 'whisper-1',
-    file: fs.createReadStream(arquivo),
-  });  
-  return transcript.text;  
+async function runAudio(arquivo, userOpenAiKey) {
+  try {
+      const openai = initializeClientOpenai(userOpenAiKey);
+      const transcript = await openai.audio.transcriptions.create({
+          model: 'whisper-1',
+          file: fs.createReadStream(arquivo),
+      });
+      return transcript.text;
+  } catch (error) {
+      console.error('Erro ao transcrever o áudio:', error);
+      throw error;
+  }
 }
 
 async function sintetizarFalaOpenAI(texto, nomeArquivo, voice, instanceName) {
@@ -427,27 +446,32 @@ async function converterArquivoOGGparaMP3(caminhoArquivoEntrada, nomeArquivoSaid
   });
   }
   
-async function runImage(promptText, base64Image) {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      max_tokens: 4096,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: promptText },
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`,
-              },
-            },
-          ],
-        },
-      ],
-    });
-  
-    return response.choices[0].message.content;
+async function runImage(promptText, base64Image, userOpenAiKey) {
+    try {
+        const openai = initializeClient(userOpenAiKey);
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            max_tokens: 4096,
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: promptText },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: `data:image/jpeg;base64,${base64Image}`,
+                            },
+                        },
+                    ],
+                },
+            ],
+        });
+        return response.choices[0].message.content;
+    } catch (error) {
+        console.error('Erro ao gerar a imagem:', error);
+        throw error;
+    }
 }
   
 async function getImageContent(filePath) {
@@ -490,7 +514,7 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
           if (fs.existsSync(audioFilePath)) {
             await converterArquivoOGGparaMP3(audioFilePath, `./audioliquido/${numeroId.split('@s.whatsapp.net')[0]}.mp3`);
             fs.unlinkSync(audioFilePath);
-            return await brokerMaster(runAudio, `./audioliquido/${numeroId.split('@s.whatsapp.net')[0]}.mp3`);
+            return await brokerMaster(runAudio, `./audioliquido/${numeroId.split('@s.whatsapp.net')[0]}.mp3`, db.readInstance(instanceName).openaikey);
           }
   
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -518,7 +542,7 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
             // Codifica a imagem em base64
             const base64Image = fs.readFileSync(imageFilePath, { encoding: 'base64' });          
             // Obtém a resposta do Vision e retorna
-            return `Imagem enviada pelo usuário: ${await runImage(await readPrompt(numeroId), base64Image)}`;
+            return `Imagem enviada pelo usuário: ${await runImage(await readPrompt(numeroId), base64Image, db.readInstance(instanceName).openaikey)}`;
           }
   
           // Aguarda um pouco antes de verificar novamente
@@ -591,5 +615,6 @@ module.exports = {
   getImageContent,
   encodeImage,
   processMessageIA,
-  brokerMaster
+  brokerMaster,
+  initializeClientOpenai
 };

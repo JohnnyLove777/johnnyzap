@@ -678,6 +678,22 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
         
             johnny.EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
           }
+          if (formattedText.startsWith('!split')) {
+            // Extrair os caracteres e o texto entre colchetes
+            const regexConteudo = /\[(.*?)\]/g;
+            const matches = [...formattedText.matchAll(regexConteudo)];
+            
+            const caracteres = matches[0] ? matches[0][1] : '';
+            const texto = matches[1] ? matches[1][1] : '';
+            
+            // Split o texto pelos caracteres fornecidos
+            const conteudos = texto.split(caracteres);
+            
+            // Enviar cada conteúdo separadamente
+            conteudos.forEach(conteudo => {
+                johnny.EnviarTexto(datafrom, conteudo.trim(), 2000, apiKeyEVO, instanceName);
+            });
+          }
           if (formattedText.startsWith('!entenderaudio')) {          
             if (db.existsDB(datafrom)) {
               db.updateNextAudio(datafrom, true);
@@ -697,7 +713,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
                     // Caminho do arquivo de áudio gerado
                     const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
                     const url_target = `http://:${PORT}/${mediaPath}`;
-                    johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName)
+                    johnny.EnviarAudio(datafrom, url_target, 3000, apiKeyEVO, instanceName)
                     .then(() => {
                       // Chame deleteFile após o sucesso de EnviarAudio
                       return johnny.deleteFile(mediaPath);
@@ -718,7 +734,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
               // Caminho do arquivo de áudio gerado
               const mediaPath = `audiosintetizado/${datafrom.split('@s.whatsapp.net')[0]}.ogg`;
               const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
-              johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName)
+              johnny.EnviarAudio(datafrom, url_target, 3000, apiKeyEVO, instanceName)
               .then(() => {
                 // Chame deleteFile após o sucesso de EnviarAudio
                 return johnny.deleteFile(mediaPath);
@@ -779,7 +795,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
         }                            
         if (message.type === 'audio') {          
             const url_target = message.content.url;
-            johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName);
+            johnny.EnviarAudio(datafrom, url_target, 3000, apiKeyEVO, instanceName);
             //db.updateDelay(datafrom, null);
         } 
       }
@@ -1096,6 +1112,22 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                     
                         johnny.EnviarLocalizacao(remoteJid, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
                       }
+                      if (formattedText.startsWith('!split')) {
+                        // Extrair os caracteres e o texto entre colchetes
+                        const regexConteudo = /\[(.*?)\]/g;
+                        const matches = [...formattedText.matchAll(regexConteudo)];
+                        
+                        const caracteres = matches[0] ? matches[0][1] : '';
+                        const texto = matches[1] ? matches[1][1] : '';
+                        
+                        // Split o texto pelos caracteres fornecidos
+                        const conteudos = texto.split(caracteres);
+                        
+                        // Enviar cada conteúdo separadamente
+                        conteudos.forEach(conteudo => {
+                            johnny.EnviarTexto(remoteJid, conteudo.trim(), 2000, apiKeyEVO, instanceName);
+                        });
+                      }
                       if (formattedText.startsWith('!entenderaudio')) {          
                         if (db.existsDB(remoteJid)) {
                           db.updateNextAudio(remoteJid, true);
@@ -1115,7 +1147,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                                 // Caminho do arquivo de áudio gerado
                                 const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
                                 const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;
-                                johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName)
+                                johnny.EnviarAudio(remoteJid, url_target, 3000, apiKeyEVO, instanceName)
                                 .then(() => {
                                   return johnny.deleteFile(mediaPath);
                               })
@@ -1135,7 +1167,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                           // Caminho do arquivo de áudio gerado
                           const mediaPath = `audiosintetizado/${remoteJid.split('@s.whatsapp.net')[0]}.ogg`;
                           const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;              
-                          johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName)
+                          johnny.EnviarAudio(remoteJid, url_target, 3000, apiKeyEVO, instanceName)
                           .then(() => {
                             // Chame deleteFile após o sucesso de EnviarAudio
                             return johnny.deleteFile(mediaPath);
@@ -1177,7 +1209,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                             })
                             .catch((error) => console.error("Erro durante a geração da imagem:", error));
                       }                         
-                      if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
+                      if (!(formattedText.startsWith('!wait')) && !(formattedText.startsWith('!split')) && !(formattedText.startsWith('!arquivo')) && !(formattedText.startsWith('!reaction')) && !(formattedText.startsWith('!local')) && !(formattedText.startsWith('!caption')) && !(formattedText.startsWith('!fim')) && !(formattedText.startsWith('!optout')) && !(formattedText.startsWith('!reiniciar')) && !(formattedText.startsWith('!media')) && !(formattedText.startsWith('!directmessage')) && !(formattedText.startsWith('Invalid message. Please, try again.')) && !(formattedText.startsWith('!rapidaagendada')) && !(formattedText.startsWith('!entenderaudio')) && !(formattedText.startsWith('!entenderimagem')) && !(formattedText.startsWith('!audioopenai')) && !(formattedText.startsWith('!audioeleven')) && !(formattedText.startsWith('!imagemopenai'))) {
                         johnny.EnviarTexto(remoteJid, formattedText, 2000, apiKeyEVO, instanceName);  
                         //db.updateDelay(remoteJid, null);
                       }                                                    
@@ -1196,7 +1228,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                     }                            
                     if (message.type === 'audio') {          
                         const url_target = message.content.url;
-                        johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName);
+                        johnny.EnviarAudio(remoteJid, url_target, 3000, apiKeyEVO, instanceName);
                         //db.updateDelay(remoteJid, null);
                     }  
                                             

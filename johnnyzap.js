@@ -679,21 +679,26 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             johnny.EnviarLocalizacao(numeroId, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
           }
           if (formattedText.startsWith('!split')) {
-            // Extrair os caracteres e o texto entre colchetes
             const regexConteudo = /\[(.*?)\]/g;
             const matches = [...formattedText.matchAll(regexConteudo)];
-            
+    
             const caracteres = matches[0] ? matches[0][1] : '';
             const texto = matches[1] ? matches[1][1] : '';
-            
+    
             // Split o texto pelos caracteres fornecidos
             const conteudos = texto.split(caracteres);
-            
-            // Enviar cada conteúdo separadamente
-            conteudos.forEach(conteudo => {
+    
+            // Função para enviar os textos com delay
+            const enviarComDelay = (conteudos, delay) => {
+            conteudos.forEach((conteudo, index) => {
+            setTimeout(() => {
                 johnny.EnviarTexto(datafrom, conteudo.trim(), 4000, apiKeyEVO, instanceName);
-                waitWithDelay("2");
-            });
+            }, index * delay);
+          });
+          };
+
+           // Enviar cada conteúdo separadamente com delay de 2 segundos (2000 ms)
+          enviarComDelay(conteudos, 3000);
           }
           if (formattedText.startsWith('!entenderaudio')) {          
             if (db.existsDB(datafrom)) {
@@ -1114,21 +1119,25 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         johnny.EnviarLocalizacao(remoteJid, nome, endereco, latitude, longitude, 2000, apiKeyEVO, instanceName);
                       }
                       if (formattedText.startsWith('!split')) {
-                        // Extrair os caracteres e o texto entre colchetes
                         const regexConteudo = /\[(.*?)\]/g;
                         const matches = [...formattedText.matchAll(regexConteudo)];
-                        
+    
                         const caracteres = matches[0] ? matches[0][1] : '';
                         const texto = matches[1] ? matches[1][1] : '';
-                        
+    
                         // Split o texto pelos caracteres fornecidos
                         const conteudos = texto.split(caracteres);
-                        
-                        // Enviar cada conteúdo separadamente
-                        conteudos.forEach(conteudo => {
-                            johnny.EnviarTexto(remoteJid, conteudo.trim(), 4000, apiKeyEVO, instanceName);
-                            waitWithDelay("2");
+    
+                        // Função para enviar os textos com delay
+                        const enviarComDelay = (conteudos, delay) => {
+                        conteudos.forEach((conteudo, index) => {
+                        setTimeout(() => {
+                        johnny.EnviarTexto(remoteJid, conteudo.trim(), 4000, apiKeyEVO, instanceName);
+                        }, index * delay);
                         });
+                        };
+                        // Enviar cada conteúdo separadamente com delay de 2 segundos (2000 ms)
+                        enviarComDelay(conteudos, 3000);
                       }
                       if (formattedText.startsWith('!entenderaudio')) {          
                         if (db.existsDB(remoteJid)) {

@@ -700,7 +700,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
                     johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName)
                     .then(() => {
                       // Chame deleteFile após o sucesso de EnviarAudio
-                      return deleteFileAsync(mediaPath);
+                      return johnny.deleteFile(mediaPath);
                   })
                   .catch(err => {
                       console.error('Erro ao enviar o áudio:', err);
@@ -721,7 +721,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
               johnny.EnviarAudio(datafrom, url_target, 2000, apiKeyEVO, instanceName)
               .then(() => {
                 // Chame deleteFile após o sucesso de EnviarAudio
-                return deleteFileAsync(mediaPath);
+                return johnny.deleteFile(mediaPath);
             })
             .catch(err => {
                 console.error('Erro ao enviar o áudio:', err);
@@ -752,7 +752,7 @@ async function createSessionJohnny(datafrom, dataid, url_registro, fluxo, instan
             johnny.EnviarImagem(datafrom, url_target, db.readCaption(datafrom), 2000, apiKeyEVO, instanceName)
             .then(() => {
               // Chame deleteFile após o sucesso de EnviarImagem
-              return deleteFileAsync(mediaPath);
+              return johnny.deleteFile(mediaPath);
           })
           .catch(err => {
               console.error('Erro ao enviar o imagem:', err);
@@ -1138,7 +1138,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                           johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName)
                           .then(() => {
                             // Chame deleteFile após o sucesso de EnviarAudio
-                            return deleteFileAsync(mediaPath);
+                            return johnny.deleteFile(mediaPath);
                         })
                         .catch(err => {
                             console.error('Erro ao enviar o áudio:', err);
@@ -1169,7 +1169,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                         johnny.EnviarImagem(remoteJid, url_target, db.readCaption(remoteJid), 2000, apiKeyEVO, instanceName)
                         .then(() => {
                           // Chame deleteFile após o sucesso de EnviarImagem
-                          return deleteFileAsync(mediaPath);
+                          return johnny.deleteFile(mediaPath);
                       })
                       .catch(err => {
                           console.error('Erro ao enviar a imagem:', err);

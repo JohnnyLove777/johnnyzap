@@ -176,6 +176,8 @@ body.dark .deleteFluxo i {
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 500px; /* Adicionado para aumentar a altura máxima */
+    overflow-y: auto; /* Permitir rolagem quando o conteúdo excede a altura máxima */
 }
 
 #fluxosList table {
@@ -190,7 +192,7 @@ body.dark .deleteFluxo i {
 }
 
 body.dark #fluxosList th, body.dark #fluxosList td {
-    border-bottom: 1px solid #555;
+    border-bottom: 1px solid #c93c3c;
 }
 
 #fluxosList tr:hover {

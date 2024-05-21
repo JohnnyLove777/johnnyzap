@@ -1117,7 +1117,7 @@ app.post('/webhook/messages-upsert', async (req, res) => {
                                 const url_target = `${IP_VPS}:${PORT}/${mediaPath}`;
                                 johnny.EnviarAudio(remoteJid, url_target, 2000, apiKeyEVO, instanceName)
                                 .then(() => {
-                                  return deleteFileAsync(mediaPath);
+                                  return johnny.deleteFile(mediaPath);
                               })
                               .catch(err => {
                                   console.error('Erro ao enviar o áudio:', err);

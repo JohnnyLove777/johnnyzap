@@ -469,13 +469,13 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
 
   if (!messageData.message.conversation) {
     
-    if(readNextAudio(numeroId) === false && messageData.message.audioMessage){
+    if(db.readNextAudio(numeroId) === false && messageData.message.audioMessage){
       return "N/A";
     }
-    if (readNextAudio(numeroId) === true && !messageData.message.audioMessage && !messageData.message.imageMessage){
+    if (db.readNextAudio(numeroId) === true && !messageData.message.audioMessage && !messageData.message.imageMessage){
       return "Mídia não detectada.";
     }
-    if (readNextAudio(numeroId) === true && messageData.message.audioMessage){
+    if (db.readNextAudio(numeroId) === true && messageData.message.audioMessage){
       const audioFilePath = `./audiobruto/${numeroId.split('@s.whatsapp.net')[0]}.ogg`;
       
       // Verifica se o arquivo já existe e, se sim, o remove
@@ -500,7 +500,7 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
         }
       }
     }
-    if (readNextImage(numeroId) === true && messageData.message.imageMessage) {
+    if (db.readNextImage(numeroId) === true && messageData.message.imageMessage) {
       const imageFilePath = `./imagemliquida/${numeroId.split('@s.whatsapp.net')[0]}.jpg`;
   
       // Verifica se o arquivo já existe e, se sim, o remove
@@ -529,7 +529,7 @@ async function processMessageIA(messageData, numeroId, mensagem, apiKeyEVO, inst
         }
       }
     }  
-    if (readNextImage(numeroId) === false && messageData.message.imageMessage){
+    if (db.readNextImage(numeroId) === false && messageData.message.imageMessage){
       return "N/A";
     }
     } 
